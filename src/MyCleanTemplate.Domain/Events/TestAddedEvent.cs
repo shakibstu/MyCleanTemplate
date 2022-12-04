@@ -1,4 +1,4 @@
-﻿using MyCleanTemplate.Domain.Entities;
+﻿using MyCleanTemplate.Domain.Test;
 
 namespace MyCleanTemplate.Domain.Events
 {

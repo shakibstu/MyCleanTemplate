@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MyCleanTemplate.Domain.Entities;
+using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Domain.ValueObjects;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Configurations

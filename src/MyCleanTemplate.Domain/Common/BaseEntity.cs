@@ -2,11 +2,17 @@
 
 namespace MyCleanTemplate.Domain.Common
 {
-    public abstract class BaseEntity
+    public abstract class BaseEntity : IEquatable<BaseEntity>
     {
-        public Guid Id { get; set; }
+
+        public Guid Id { get; private init; }
 
         private readonly List<BaseEvent> _domainEvents = new();
+
+        protected BaseEntity(Guid id)
+        {
+            Id = id;
+        }
 
         [NotMapped]
         public IReadOnlyCollection<BaseEvent> DomainEvents => _domainEvents.AsReadOnly();
@@ -25,5 +31,40 @@ namespace MyCleanTemplate.Domain.Common
         {
             _domainEvents.Clear();
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+
+            if (obj.GetType() != GetType())
+                return false;
+
+            if (obj is not BaseEntity entity)
+                return false;
+
+            return entity.Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_domainEvents, Id);
+        }
+
+        public bool Equals(BaseEntity other)
+        {
+            if (other is null)
+                return false;
+
+            if (other.GetType() != GetType())
+                return false;
+
+            return other.Id == Id;
+        }
+
+        public static bool operator ==(BaseEntity first, BaseEntity second) =>
+            first is not null && second is not null && first.Equals(second);
+
+        public static bool operator !=(BaseEntity first, BaseEntity second) => !(first == second);
     }
 }
