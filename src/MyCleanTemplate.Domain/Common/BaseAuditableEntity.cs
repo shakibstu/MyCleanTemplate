@@ -4,7 +4,7 @@
     {
         public DateTime Created { get; private init; }
 
-        public DateTime LastModified { get; set; }
+        public DateTime? LastModified { get; set; }
 
         protected BaseAuditableEntity(Guid id) : base(id)
         {

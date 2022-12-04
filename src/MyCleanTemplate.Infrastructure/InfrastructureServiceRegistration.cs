@@ -18,15 +18,15 @@ namespace MyCleanTemplate.Infrastructure
                 .FromCallingAssembly()
 
                 .AddClasses(classes => classes.AssignableTo(typeof(ITransientDependency)), false)
-                .AsMatchingInterface()
+                .AsImplementedInterfaces()
                 .WithTransientLifetime()
 
                 .AddClasses(classes => classes.AssignableTo(typeof(ISingletonDependency)), false)
-                .AsMatchingInterface()
+                .AsImplementedInterfaces()
                 .WithSingletonLifetime()
 
                 .AddClasses(classes => classes.AssignableTo(typeof(IScopeDependency)), false)
-                .AsMatchingInterface()
+                .AsImplementedInterfaces()
                 .WithScopedLifetime()
             );
 

@@ -26,7 +26,7 @@ namespace MyCleanTemplate.Infrastructure.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("LastModified")
+                    b.Property<DateTime?>("LastModified")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -38,6 +38,9 @@ namespace MyCleanTemplate.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("TestValueObjectJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TestValueObjectList")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -80,46 +83,7 @@ namespace MyCleanTemplate.Infrastructure.Migrations
                                 .HasForeignKey("TestEntityId");
                         });
 
-                    b.OwnsMany("MyCleanTemplate.Domain.ValueObjects.TestValueObject", "TestValueObjectList", b1 =>
-                        {
-                            b1.Property<Guid>("TestEntityId")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<string>("City")
-                                .HasMaxLength(100)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Country")
-                                .HasMaxLength(100)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("State")
-                                .HasMaxLength(100)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Street")
-                                .HasMaxLength(100)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("ZipCode")
-                                .HasMaxLength(100)
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("TestEntityId", "Id");
-
-                            b1.ToTable("Tests_TestValueObjectList");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TestEntityId");
-                        });
-
                     b.Navigation("TestValueObject");
-
-                    b.Navigation("TestValueObjectList");
                 });
 #pragma warning restore 612, 618
         }

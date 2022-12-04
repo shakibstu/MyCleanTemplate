@@ -11,15 +11,15 @@ namespace MyCleanTemplate.Domain.Test
             Name = name;
             TestValueObject = testValueObject;
             TestValueObjectJson = testValueObjectJson;
-            _values = testValueObjectList;
+            TestValueObjectList = testValueObjectList;
             TestEnum = testEnum;
         }
-        private readonly List<TestValueObject> _values;
+        
         public TestEnum TestEnum { get; private set; }
         public string Name { get; private set; }
         public TestValueObject TestValueObject { get; private set; }
         public TestValueObject TestValueObjectJson { get; private set; }
-        public IReadOnlyCollection<TestValueObject> TestValueObjectList => _values;
+        public List<TestValueObject> TestValueObjectList { get; private set; }
 
         public static TestEntity Create(Guid id, string name, TestValueObject testValueObject, TestValueObject testValueObjectJson, List<TestValueObject> testValueObjectList, TestEnum testEnum)
         {

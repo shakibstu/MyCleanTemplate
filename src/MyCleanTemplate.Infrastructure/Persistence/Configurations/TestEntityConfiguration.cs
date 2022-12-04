@@ -27,14 +27,10 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
                 sb.Property(x => x.ZipCode).HasMaxLength(100);
             });
 
-            builder.OwnsMany(t => t.TestValueObjectList, sb =>
-            {
-                sb.Property(x => x.Country).HasMaxLength(100);
-                sb.Property(x => x.State).HasMaxLength(100);
-                sb.Property(x => x.City).HasMaxLength(100);
-                sb.Property(x => x.Street).HasMaxLength(100);
-                sb.Property(x => x.ZipCode).HasMaxLength(100);
-            });
+
+            builder.Property(a => a.TestValueObjectList)
+                .HasConversion(x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
+                    y => JsonSerializer.Deserialize<List<TestValueObject>>(y, (JsonSerializerOptions)null));
         }
     }
 }
