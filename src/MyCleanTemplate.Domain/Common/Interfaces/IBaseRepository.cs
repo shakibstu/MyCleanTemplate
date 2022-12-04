@@ -2,7 +2,7 @@
 
 namespace MyCleanTemplate.Domain.Common.Interfaces
 {
-    public interface IBaseRepository<T> where T : BaseEntity
+    public interface IBaseRepository<T> : IScopeDependency where T : BaseEntity
     {
         Task<int> Count();
         Task<bool> Any(Expression<Func<T, bool>> predicate = null);

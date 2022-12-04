@@ -338,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/src/MyCleanTemplate.API/*.db-wal
+/src/MyCleanTemplate.API/*.db-shm
+/src/MyCleanTemplate.API/*.db

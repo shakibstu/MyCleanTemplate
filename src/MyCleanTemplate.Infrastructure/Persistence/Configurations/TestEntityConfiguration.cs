@@ -20,6 +20,8 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
 
             builder.OwnsOne(t => t.TestValueObject, sb =>
             {
+                sb.Property(x => x.Country).HasMaxLength(100);
+                sb.Property(x => x.State).HasMaxLength(100);
                 sb.Property(x => x.City).HasMaxLength(100);
                 sb.Property(x => x.Street).HasMaxLength(100);
                 sb.Property(x => x.ZipCode).HasMaxLength(100);
@@ -27,6 +29,8 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
 
             builder.OwnsMany(t => t.TestValueObjectList, sb =>
             {
+                sb.Property(x => x.Country).HasMaxLength(100);
+                sb.Property(x => x.State).HasMaxLength(100);
                 sb.Property(x => x.City).HasMaxLength(100);
                 sb.Property(x => x.Street).HasMaxLength(100);
                 sb.Property(x => x.ZipCode).HasMaxLength(100);

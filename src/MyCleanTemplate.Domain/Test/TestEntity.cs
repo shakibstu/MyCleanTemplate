@@ -5,6 +5,15 @@ namespace MyCleanTemplate.Domain.Test
 {
     public class TestEntity : BaseAuditableEntity
     {
+        private TestEntity(Guid id) : base(id) { }
+        private TestEntity(Guid id, string name, TestValueObject testValueObject, TestValueObject testValueObjectJson, List<TestValueObject> testValueObjectList, TestEnum testEnum) : base(id)
+        {
+            Name = name;
+            TestValueObject = testValueObject;
+            TestValueObjectJson = testValueObjectJson;
+            _values = testValueObjectList;
+            TestEnum = testEnum;
+        }
         private readonly List<TestValueObject> _values;
         public TestEnum TestEnum { get; private set; }
         public string Name { get; private set; }
@@ -12,13 +21,9 @@ namespace MyCleanTemplate.Domain.Test
         public TestValueObject TestValueObjectJson { get; private set; }
         public IReadOnlyCollection<TestValueObject> TestValueObjectList => _values;
 
-        public TestEntity(Guid id, string name, TestValueObject testValueObject, TestValueObject testValueObjectJson, List<TestValueObject> testValueObjectList, TestEnum testEnum) : base(id)
+        public static TestEntity Create(Guid id, string name, TestValueObject testValueObject, TestValueObject testValueObjectJson, List<TestValueObject> testValueObjectList, TestEnum testEnum)
         {
-            Name = name;
-            TestValueObject = testValueObject;
-            TestValueObjectJson = testValueObjectJson;
-            _values = testValueObjectList;
-            TestEnum = testEnum;
+            return new TestEntity(id, name, testValueObject, testValueObjectJson, testValueObjectList, testEnum);
         }
     }
 }
