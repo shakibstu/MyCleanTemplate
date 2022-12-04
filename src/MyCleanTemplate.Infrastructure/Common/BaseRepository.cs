@@ -34,7 +34,7 @@ namespace MyCleanTemplate.Infrastructure.Common
             _dbSet.AddRange(addRangeAsync);
             if (autoSave)
             {
-                _context.SaveChangesAsync();
+                return _context.SaveChangesAsync();
             }
             return Task.CompletedTask;
         }
@@ -55,7 +55,7 @@ namespace MyCleanTemplate.Infrastructure.Common
             _context.Entry(entity).State = EntityState.Modified;
             if (autoSave)
             {
-                _context.SaveChangesAsync();
+                return _context.SaveChangesAsync();
             }
             return Task.CompletedTask;
         }
