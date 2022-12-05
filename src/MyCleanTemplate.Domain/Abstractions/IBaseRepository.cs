@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace MyCleanTemplate.Domain.Common.Interfaces
+namespace MyCleanTemplate.Domain.Abstractions
 {
     public interface IBaseRepository<T> : IScopeDependency where T : BaseEntity
     {

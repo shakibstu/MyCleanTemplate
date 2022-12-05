@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace MyCleanTemplate.Infrastructure.Persistence
 {
-    public partial class ApplicationDbContext : DbContext
+    internal partial class ApplicationDbContext : DbContext
     {
         private readonly IMediator _mediator;
         public ApplicationDbContext(IMediator mediator, DbContextOptions<ApplicationDbContext> options) : base(options)

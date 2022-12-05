@@ -1,4 +1,4 @@
-﻿using MyCleanTemplate.Domain.Common.Interfaces;
+﻿using MyCleanTemplate.Domain.Abstractions;
 
 namespace MyCleanTemplate.Domain.Test
 {

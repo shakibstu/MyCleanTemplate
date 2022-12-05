@@ -3,7 +3,7 @@ using MyCleanTemplate.Domain.Test;
 
 namespace MyCleanTemplate.Infrastructure.Persistence
 {
-    public partial class ApplicationDbContext
+    internal partial class ApplicationDbContext
     {
         public DbSet<TestEntity> Tests => Set<TestEntity>();
     }

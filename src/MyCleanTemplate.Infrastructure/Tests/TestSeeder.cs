@@ -1,11 +1,11 @@
-﻿using MyCleanTemplate.Domain.Common.Interfaces;
+﻿using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Domain.Enums;
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Domain.ValueObjects;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {
-    public class TestSeeder : IDataSeeder
+    internal class TestSeeder : IDataSeeder
     {
         private readonly ITestRepository _repository;
         public TestSeeder(ITestRepository repository)

@@ -5,7 +5,7 @@ using MyCleanTemplate.Domain.Common;
 
 namespace MyCleanTemplate.Infrastructure.Common
 {
-    public static class MediatorExtensions
+    internal static class MediatorExtensions
     {
         public static Task DispatchDomainEvents(this IMediator mediator, DbContext context)
         {

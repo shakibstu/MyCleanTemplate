@@ -1,5 +1,6 @@
-﻿using MediatR;
+﻿using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
 
 namespace MyCleanTemplate.Application.Contract.Test.Commands;
 
-public sealed record CreateTestCommand() : IRequest;
+public sealed record CreateTestCommand() : ICommand;
+ 

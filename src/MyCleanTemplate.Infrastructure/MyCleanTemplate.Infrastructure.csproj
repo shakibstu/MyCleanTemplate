@@ -7,11 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MyCleanTemplate.Application\MyCleanTemplate.Application.csproj" />
-    <ProjectReference Include="..\MyCleanTemplate.Domain\MyCleanTemplate.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

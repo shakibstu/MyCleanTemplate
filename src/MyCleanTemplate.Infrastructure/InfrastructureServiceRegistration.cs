@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MyCleanTemplate.Domain.Common.Interfaces;
-using MyCleanTemplate.Domain.Test;
+using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.Infrastructure
@@ -44,6 +44,7 @@ namespace MyCleanTemplate.Infrastructure
                 await db.Database.MigrateAsync();
             }
 
+            var x =scope.ServiceProvider.GetRequiredService(typeof(IPipelineBehavior<,>));
             var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
             var dataSeeders = seeders as IDataSeeder[] ?? seeders.ToArray();
             var seedTasks = new List<Task>(dataSeeders.Count());

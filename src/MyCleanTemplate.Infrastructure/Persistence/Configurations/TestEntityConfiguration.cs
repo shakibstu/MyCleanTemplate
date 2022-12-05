@@ -6,7 +6,7 @@ using MyCleanTemplate.Domain.ValueObjects;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
 {
-    public class TestEntityConfiguration : IEntityTypeConfiguration<TestEntity>
+    internal class TestEntityConfiguration : IEntityTypeConfiguration<TestEntity>
     {
         public void Configure(EntityTypeBuilder<TestEntity> builder)
         {

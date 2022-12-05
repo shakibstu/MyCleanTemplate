@@ -1,12 +1,12 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Domain.Common;
-using MyCleanTemplate.Domain.Common.Interfaces;
 using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.Infrastructure.Common
 {
-    public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
+    internal abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         private readonly ApplicationDbContext _context;
         private readonly DbSet<T> _dbSet;
