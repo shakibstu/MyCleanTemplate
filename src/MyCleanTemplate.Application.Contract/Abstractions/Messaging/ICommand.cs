@@ -3,11 +3,13 @@ using MyCleanTemplate.Domain;
 
 namespace MyCleanTemplate.Application.Contract.Abstractions.Messaging
 {
-    public interface ICommand : IRequest<Result>
+    public interface ICommand : IRequest
     {
     }
-
-    public interface ICommand<TResponse> : IRequest<Result<TResponse>>
+    public interface INotificationCommand : INotification
+    {
+    }
+    public interface ICommand<out TResponse> : IRequest<TResponse>
     {
     }
 }

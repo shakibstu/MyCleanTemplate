@@ -1,10 +1,12 @@
 ﻿using MediatR;
+using MyCleanTemplate.Application.Behaviors.Helpers;
+using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
 using MyCleanTemplate.Domain;
 using MyCleanTemplate.Domain.Abstractions;
 
 namespace MyCleanTemplate.Application.Behaviors
 {
-    internal class SaveChangesBehavior<TRequest, TResponse, T> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse> where TResponse : Result<T> 
+    internal class SaveChangesBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : ICommand, IRequest<TResponse> where TResponse : class , ITransientDependency
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -13,19 +15,23 @@ namespace MyCleanTemplate.Application.Behaviors
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+        public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            return _unitOfWork.SaveChangesTransactional(next, cancellationToken);
+        }
+    }
+    internal class SaveChangesBehaviorForNotifiers<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : INotificationCommand, IRequest<TResponse> where TResponse : class , ITransientDependency
+    {
+        private readonly IUnitOfWork _unitOfWork;
 
-            var response = await next();
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-            return response;
+        public SaveChangesBehaviorForNotifiers(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
         }
 
-        public Task<Result<TResponse>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse>> next, CancellationToken cancellationToken)
+        public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return _unitOfWork.SaveChangesTransactional(next, cancellationToken);
         }
     }
 }
