@@ -1,16 +1,15 @@
 ﻿using MediatR;
 using MyCleanTemplate.Application.Behaviors.Helpers;
 using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
-using MyCleanTemplate.Domain;
 using MyCleanTemplate.Domain.Abstractions;
 
 namespace MyCleanTemplate.Application.Behaviors
 {
-    internal class SaveChangesBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : ICommand, IRequest<TResponse> where TResponse : class , ITransientDependency
+    internal class SaveChangesBehaviorWithResponse<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>  where TRequest : ICommand<TResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public SaveChangesBehavior(IUnitOfWork unitOfWork)
+        public SaveChangesBehaviorWithResponse(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -20,11 +19,11 @@ namespace MyCleanTemplate.Application.Behaviors
             return _unitOfWork.SaveChangesTransactional(next, cancellationToken);
         }
     }
-    internal class SaveChangesBehaviorForNotifiers<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : INotificationCommand, IRequest<TResponse> where TResponse : class , ITransientDependency
+    internal class SaveChangesBehaviorWithoutResponse<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>,ICommand
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public SaveChangesBehaviorForNotifiers(IUnitOfWork unitOfWork)
+        public SaveChangesBehaviorWithoutResponse(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

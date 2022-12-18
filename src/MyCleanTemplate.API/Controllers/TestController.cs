@@ -4,6 +4,8 @@ using MyCleanTemplate.Application.Contract.Test.Commands;
 
 namespace MyCleanTemplate.API.Controllers;
 
+[Route("api/[controller]/[action]")]
+[ApiController]
 public class TestController : ControllerBase
 {
     private readonly IMediator _mediator;

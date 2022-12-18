@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Persistence;
+using Scrutor;
 
 namespace MyCleanTemplate.Infrastructure
 {
@@ -18,18 +19,20 @@ namespace MyCleanTemplate.Infrastructure
                 .FromCallingAssembly()
 
                 .AddClasses(classes => classes.AssignableTo(typeof(ITransientDependency)), false)
+                .UsingRegistrationStrategy(RegistrationStrategy.Skip)
                 .AsImplementedInterfaces()
                 .WithTransientLifetime()
-
+                
                 .AddClasses(classes => classes.AssignableTo(typeof(ISingletonDependency)), false)
+                .UsingRegistrationStrategy(RegistrationStrategy.Skip)
                 .AsImplementedInterfaces()
                 .WithSingletonLifetime()
 
                 .AddClasses(classes => classes.AssignableTo(typeof(IScopeDependency)), false)
+                .UsingRegistrationStrategy(RegistrationStrategy.Skip)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
             );
-
             return services;
         }
 
@@ -44,7 +47,6 @@ namespace MyCleanTemplate.Infrastructure
                 await db.Database.MigrateAsync();
             }
 
-            var x =scope.ServiceProvider.GetRequiredService(typeof(IPipelineBehavior<,>));
             var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
             var dataSeeders = seeders as IDataSeeder[] ?? seeders.ToArray();
             var seedTasks = new List<Task>(dataSeeders.Count());

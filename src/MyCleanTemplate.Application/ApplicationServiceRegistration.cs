@@ -11,6 +11,10 @@ namespace MyCleanTemplate.Application
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
+            services.Scan(scan => scan.FromCallingAssembly().AddClasses(classes => classes.AssignableTo(typeof(IPipelineBehavior<,>)))
+            .AsImplementedInterfaces()
+            .WithTransientLifetime());
+
             return services;
         }
     }
