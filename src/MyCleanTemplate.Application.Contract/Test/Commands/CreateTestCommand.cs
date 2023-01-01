@@ -3,4 +3,3 @@
 namespace MyCleanTemplate.Application.Contract.Test.Commands;
 
 public sealed record CreateTestCommand() : ICommand;
- 

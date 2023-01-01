@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MyCleanTemplate.Domain;
 
 namespace MyCleanTemplate.Application.Contract.Abstractions.Messaging
 {

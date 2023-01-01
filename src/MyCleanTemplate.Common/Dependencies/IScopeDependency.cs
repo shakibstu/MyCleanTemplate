@@ -1,4 +1,4 @@
-﻿namespace MyCleanTemplate.Domain.Abstractions
+﻿namespace MyCleanTemplate.Common.Dependencies
 {
     public interface IScopeDependency
     {

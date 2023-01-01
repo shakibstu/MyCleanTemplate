@@ -14,7 +14,7 @@ namespace MyCleanTemplate.Domain.Test
             TestValueObjectList = testValueObjectList;
             TestEnum = testEnum;
         }
-        
+
         public TestEnum TestEnum { get; private set; }
         public string Name { get; private set; }
         public TestValueObject TestValueObject { get; private set; }

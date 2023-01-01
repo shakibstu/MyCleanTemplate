@@ -7,6 +7,7 @@
     <UserSecretsId>b3c70187-362f-4922-96fa-09d1eaa0c01d</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MyCleanTemplate.Infrastructure\MyCleanTemplate.Infrastructure.csproj" />
+    <ProjectReference Include="..\MyCleanTemplate.SourceGenerator\MyCleanTemplate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

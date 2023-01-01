@@ -7,15 +7,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A17250F5-DD5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7A1B07EB-B6FB-4AF2-B035-C6A374608AA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.API", "src\MyCleanTemplate.API\MyCleanTemplate.API.csproj", "{FD636AAD-F04A-4D09-ADB2-06DB8C7F6066}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.API", "src\MyCleanTemplate.API\MyCleanTemplate.API.csproj", "{FD636AAD-F04A-4D09-ADB2-06DB8C7F6066}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.Application", "src\MyCleanTemplate.Application\MyCleanTemplate.Application.csproj", "{8FCDE29C-F646-4E8C-81F9-C6AC0957E97D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.Application", "src\MyCleanTemplate.Application\MyCleanTemplate.Application.csproj", "{8FCDE29C-F646-4E8C-81F9-C6AC0957E97D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.Application.Contract", "src\MyCleanTemplate.Application.Contract\MyCleanTemplate.Application.Contract.csproj", "{F89B4908-D480-4F3C-AB7E-0B91D755FA90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.Domain", "src\MyCleanTemplate.Domain\MyCleanTemplate.Domain.csproj", "{0DF7FF59-27F7-451F-8083-0E63C39D530F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.Domain", "src\MyCleanTemplate.Domain\MyCleanTemplate.Domain.csproj", "{0DF7FF59-27F7-451F-8083-0E63C39D530F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.Infrastructure", "src\MyCleanTemplate.Infrastructure\MyCleanTemplate.Infrastructure.csproj", "{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.Infrastructure", "src\MyCleanTemplate.Infrastructure\MyCleanTemplate.Infrastructure.csproj", "{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.Common", "src\MyCleanTemplate.Common\MyCleanTemplate.Common.csproj", "{D58B337D-722D-4BCF-B301-AC25ED2DFB20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.SourceGenerator", "src\MyCleanTemplate.SourceGenerator\MyCleanTemplate.SourceGenerator.csproj", "{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +47,14 @@ Global
 		{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D58B337D-722D-4BCF-B301-AC25ED2DFB20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D58B337D-722D-4BCF-B301-AC25ED2DFB20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D58B337D-722D-4BCF-B301-AC25ED2DFB20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D58B337D-722D-4BCF-B301-AC25ED2DFB20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +65,8 @@ Global
 		{F89B4908-D480-4F3C-AB7E-0B91D755FA90} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
 		{0DF7FF59-27F7-451F-8083-0E63C39D530F} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
 		{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
+		{D58B337D-722D-4BCF-B301-AC25ED2DFB20} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
+		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {008BE751-199E-4BBD-9162-036380A44416}

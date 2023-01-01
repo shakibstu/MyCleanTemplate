@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
+using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.Infrastructure.Common
 {
-    internal class UnitOfWork : IUnitOfWork
+    internal class UnitOfWork : IUnitOfWork, IScopeDependency
     {
         private readonly ApplicationDbContext _context;
         public UnitOfWork(ApplicationDbContext context)

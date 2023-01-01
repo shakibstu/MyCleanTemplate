@@ -3,10 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MyCleanTemplate.Application\MyCleanTemplate.Application.csproj" />
+    <ProjectReference Include="..\MyCleanTemplate.SourceGenerator\MyCleanTemplate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

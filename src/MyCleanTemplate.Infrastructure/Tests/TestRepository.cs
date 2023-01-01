@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Common;
 using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {
-    internal class TestRepository : BaseRepository<TestEntity>, ITestRepository
+    internal class TestRepository : BaseRepository<TestEntity>, ITestRepository, IScopeDependency 
     {
         private readonly DbSet<TestEntity> _entities;
         public TestRepository(ApplicationDbContext context) : base(context)

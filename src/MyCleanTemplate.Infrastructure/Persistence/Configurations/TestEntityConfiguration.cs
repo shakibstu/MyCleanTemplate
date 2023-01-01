@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Domain.ValueObjects;
+using System.Text.Json;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
 {
@@ -15,7 +15,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(a => a.TestValueObjectJson)
-                .HasConversion(x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null), 
+                .HasConversion(x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
                     y => JsonSerializer.Deserialize<TestValueObject>(y, (JsonSerializerOptions)null));
 
             builder.OwnsOne(t => t.TestValueObject, sb =>

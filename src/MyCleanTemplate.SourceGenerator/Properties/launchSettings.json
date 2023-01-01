@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Application-SG": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\MyCleanTemplate.Application\\MyCleanTemplate.Application.csproj"
+    },
+    "API-SG": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\MyCleanTemplate.API\\MyCleanTemplate.API.csproj"
+    },
+    "Infra-SG": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\MyCleanTemplate.Infrastructure\\MyCleanTemplate.Infrastructure.csproj"
+    }
+  }
+}

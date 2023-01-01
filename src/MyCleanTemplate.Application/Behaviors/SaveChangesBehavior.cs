@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using MyCleanTemplate.Application.Behaviors.Helpers;
 using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
+using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Domain.Abstractions;
 
 namespace MyCleanTemplate.Application.Behaviors
 {
-    internal class SaveChangesBehaviorWithResponse<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>  where TRequest : ICommand<TResponse>
+    internal class SaveChangesBehaviorWithResponse<TRequest, TResponse> : ITransientDependency, IPipelineBehavior<TRequest, TResponse> where TRequest : ICommand<TResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -19,7 +20,7 @@ namespace MyCleanTemplate.Application.Behaviors
             return _unitOfWork.SaveChangesTransactional(next, cancellationToken);
         }
     }
-    internal class SaveChangesBehaviorWithoutResponse<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>,ICommand
+    internal class SaveChangesBehaviorWithoutResponse<TRequest, TResponse> : ITransientDependency, IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>, ICommand
     {
         private readonly IUnitOfWork _unitOfWork;
 

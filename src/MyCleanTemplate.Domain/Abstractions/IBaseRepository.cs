@@ -1,8 +1,9 @@
 ﻿using System.Linq.Expressions;
+using MyCleanTemplate.Common.Dependencies;
 
 namespace MyCleanTemplate.Domain.Abstractions
 {
-    public interface IBaseRepository<T> : IScopeDependency where T : BaseEntity
+    public interface IBaseRepository<T> where T : BaseEntity
     {
         Task<int> Count();
         Task<bool> Any(Expression<Func<T, bool>> predicate = null);

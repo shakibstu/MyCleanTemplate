@@ -1,10 +1,9 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Persistence;
-using Scrutor;
+using MyCleanTemplate.Infrastructure;
 
 namespace MyCleanTemplate.Infrastructure
 {
@@ -14,25 +13,7 @@ namespace MyCleanTemplate.Infrastructure
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
-
-            services.Scan(scan => scan
-                .FromCallingAssembly()
-
-                .AddClasses(classes => classes.AssignableTo(typeof(ITransientDependency)), false)
-                .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-                .AsImplementedInterfaces()
-                .WithTransientLifetime()
-                
-                .AddClasses(classes => classes.AssignableTo(typeof(ISingletonDependency)), false)
-                .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
-
-                .AddClasses(classes => classes.AssignableTo(typeof(IScopeDependency)), false)
-                .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-            );
+            services.InjectSGDependenciesInfrastructure();
             return services;
         }
 

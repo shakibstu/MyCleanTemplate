@@ -1,11 +1,12 @@
-﻿using MyCleanTemplate.Domain.Abstractions;
+﻿using MyCleanTemplate.Common.Dependencies;
+using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Domain.Enums;
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Domain.ValueObjects;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {
-    internal class TestSeeder : IDataSeeder
+    internal class TestSeeder : IDataSeeder, ITransientDependency
     {
         private readonly ITestRepository _repository;
         public TestSeeder(ITestRepository repository)
@@ -17,7 +18,7 @@ namespace MyCleanTemplate.Infrastructure.Tests
         public Task SeedAsync()
         {
             var vo = TestValueObject.Create("st1", "city", "state", "country", "123");
-            var testEntity = TestEntity.Create(Guid.NewGuid(), "test", vo,vo,new List<TestValueObject>{ vo }, TestEnum.Test0 );
+            var testEntity = TestEntity.Create(Guid.NewGuid(), "test", vo, vo, new List<TestValueObject> { vo }, TestEnum.Test0);
             return _repository.Add(testEntity, true);
         }
     }

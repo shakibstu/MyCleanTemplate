@@ -1,8 +1,8 @@
-﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Domain.Common;
 using MyCleanTemplate.Infrastructure.Persistence;
+using System.Linq.Expressions;
 
 namespace MyCleanTemplate.Infrastructure.Common
 {

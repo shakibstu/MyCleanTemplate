@@ -19,7 +19,7 @@ namespace MyCleanTemplate.API
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddAutoMapper(typeof(Startup));
-            services.AddInfrastructureServices(Configuration).AddApplicationServices();
+            services.AddInfrastructureServices(Configuration).AddApplicationServices().InjectSGDependenciesAPI();
         }
         public async Task Configure(WebApplication app)
         {
