@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MyCleanTemplate.API.Models;
 using MyCleanTemplate.Application.Contract.Test.Commands;
 
 namespace MyCleanTemplate.API.Controllers;
@@ -13,8 +14,8 @@ public class TestController : ControllerBase
     {
         _mediator = mediator;
     }
-    [HttpGet]
-    public async Task<IActionResult> GetCurrencies()
+    [HttpPost]
+    public async Task<IActionResult> GetCurrencies([FromBody] CreateTestRequest request)
     {
         await _mediator.Send(new CreateTestCommand());
         return Ok();
