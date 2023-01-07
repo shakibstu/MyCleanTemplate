@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using MyCleanTemplate.Application.Contract.Abstractions.AssemblyMarker;
 using System.Reflection;
 
 namespace MyCleanTemplate.Application
@@ -11,6 +13,7 @@ namespace MyCleanTemplate.Application
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.InjectSGDependenciesApplication();
+            services.AddValidatorsFromAssemblyContaining(typeof(IApplicationContractAssemblyMarker));
             return services;
         }
     }

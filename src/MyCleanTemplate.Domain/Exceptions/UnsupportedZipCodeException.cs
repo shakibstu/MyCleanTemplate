@@ -5,7 +5,7 @@ namespace MyCleanTemplate.Domain.Exceptions
 {
     public class UnsupportedZipCodeException : BadRequestException
     {
-        public UnsupportedZipCodeException(string zipCode) : base($"ZipCode \"{zipCode}\" is unsupported.")
+        public UnsupportedZipCodeException(string zipCode) : base($"ZipCode \"{zipCode}\" is unsupported.", new Dictionary<string, string[]>())
         {
 
         }

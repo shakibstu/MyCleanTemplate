@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
-using MyCleanTemplate.Application;
+﻿using MyCleanTemplate.Application;
 using MyCleanTemplate.Infrastructure;
 
 namespace MyCleanTemplate.API
@@ -22,8 +20,6 @@ namespace MyCleanTemplate.API
             services.AddSwaggerGen();
             services.AddAutoMapper(typeof(Startup));
             services.AddInfrastructureServices(Configuration).AddApplicationServices().InjectSGDependenciesAPI();
-            services.AddFluentValidationAutoValidation();
-            services.AddValidatorsFromAssemblyContaining<Startup>();
         }
         public async Task Configure(WebApplication app)
         {
@@ -33,6 +29,7 @@ namespace MyCleanTemplate.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseExceptionHandler("/api/error");

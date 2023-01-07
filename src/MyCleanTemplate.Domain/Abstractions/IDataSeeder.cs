@@ -1,6 +1,4 @@
-﻿using MyCleanTemplate.Common.Dependencies;
-
-namespace MyCleanTemplate.Domain.Abstractions 
+﻿namespace MyCleanTemplate.Domain.Abstractions
 {
     public interface IDataSeeder
     {

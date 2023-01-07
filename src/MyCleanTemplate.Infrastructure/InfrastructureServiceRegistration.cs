@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Persistence;
-using MyCleanTemplate.Infrastructure;
 
 namespace MyCleanTemplate.Infrastructure
 {
