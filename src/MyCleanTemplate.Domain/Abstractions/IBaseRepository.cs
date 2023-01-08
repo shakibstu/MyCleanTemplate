@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using MyCleanTemplate.Common.Dependencies;
 
 namespace MyCleanTemplate.Domain.Abstractions
 {

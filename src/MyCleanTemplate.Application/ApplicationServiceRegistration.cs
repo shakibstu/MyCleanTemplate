@@ -1,8 +1,8 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using MyCleanTemplate.Application.Contract.Abstractions.AssemblyMarker;
 using System.Reflection;
+using FluentValidation;
+using MyCleanTemplate.Application.Contract.Abstractions.AssemblyMarker;
 
 namespace MyCleanTemplate.Application
 {

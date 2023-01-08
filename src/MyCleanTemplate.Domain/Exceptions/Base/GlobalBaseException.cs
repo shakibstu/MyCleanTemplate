@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections;
+using System.Collections.Immutable;
 using System.Net;
 
 namespace MyCleanTemplate.Domain.Exceptions.Base

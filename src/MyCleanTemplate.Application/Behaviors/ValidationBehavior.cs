@@ -32,7 +32,7 @@ internal class ValidationBehavior<TRequest, TResponse> : ITransientDependency, I
                 .ToDictionary(x => x.Key, x => x.Values);
             if (errorsDictionary.Any())
             {
-                throw new BadRequestException("Validation Failed!", errorsDictionary);
+                throw new BadRequestException("Validation Failed!" ,errorsDictionary);
             }
         }
         return await next();

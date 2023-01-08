@@ -1,4 +1,6 @@
-﻿using MyCleanTemplate.Application;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using MyCleanTemplate.Application;
 using MyCleanTemplate.Infrastructure;
 
 namespace MyCleanTemplate.API

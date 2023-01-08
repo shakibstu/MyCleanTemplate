@@ -1,10 +1,10 @@
 ﻿
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyCleanTemplate.Common.Dependencies;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MyCleanTemplate.SourceGenerator
 {
@@ -43,7 +43,7 @@ namespace MyCleanTemplate.SourceGenerator
             var syntaxNode = context.Node;
             var model = context.SemanticModel;
             if (syntaxNode is not ClassDeclarationSyntax classDeclaration) return;
-
+            
             var symbol =
                 model.GetDeclaredSymbol(classDeclaration);
             if (symbol == null) return;
@@ -86,7 +86,7 @@ namespace MyCleanTemplate.SourceGenerator
                         symbol.Interfaces.Where(a => !SymbolEqualityComparer.Default.Equals(a, transientDependencyMetadata))
                             .Select(a =>
                                 $"services.AddTransient(typeof({GetType(a)}),typeof({GetType(symbol.OriginalDefinition)}));"));
-                    if (symbol.BaseType is { IsAbstract: true, DeclaredAccessibility: Accessibility.Public })
+                    if (symbol.BaseType is { IsAbstract: true, DeclaredAccessibility:Accessibility.Public })
                     {
                         Injections.Add(
                             $"services.AddTransient(typeof({GetType(symbol.BaseType)}),typeof({GetType(symbol.OriginalDefinition)}));");
