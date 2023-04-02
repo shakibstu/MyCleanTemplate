@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Domain.ValueObjects;
 using System.Text.Json;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
 {
@@ -16,7 +18,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
 
             builder.Property(a => a.TestValueObjectJson)
                 .HasConversion(x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
-                    y => JsonSerializer.Deserialize<TestValueObject>(y, (JsonSerializerOptions)null));
+                    y => JsonConvert.DeserializeObject<TestValueObject>(y));
 
             builder.OwnsOne(t => t.TestValueObject, sb =>
             {
@@ -29,8 +31,8 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Configurations
 
 
             builder.Property(a => a.TestValueObjectList)
-                .HasConversion(x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
-                    y => JsonSerializer.Deserialize<List<TestValueObject>>(y, (JsonSerializerOptions)null));
+                .HasConversion(x => JsonConvert.SerializeObject(x),
+                    y => JsonConvert.DeserializeObject<List<TestValueObject>>(y));
         }
     }
 }

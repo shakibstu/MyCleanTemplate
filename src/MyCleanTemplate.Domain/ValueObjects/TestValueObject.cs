@@ -9,6 +9,7 @@ namespace MyCleanTemplate.Domain.ValueObjects
         public string State { get; }
         public string Country { get; }
         public string ZipCode { get; }
+        private TestValueObject() { }
         private TestValueObject(string street, string city, string state, string country, string zipCode)
         {
             Street = street;

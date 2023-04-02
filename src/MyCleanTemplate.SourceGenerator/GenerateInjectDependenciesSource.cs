@@ -25,8 +25,9 @@ namespace MyCleanTemplate.SourceGenerator
     using Microsoft.Extensions.DependencyInjection;
     public static class DependencyInjectionHelper
     {{
-        public static void InjectSGDependencies{context.Compilation.AssemblyName!.Split('.').Last()}(this IServiceCollection services){{
+        public static IServiceCollection InjectSGDependencies{context.Compilation.AssemblyName!.Split('.').Last()}(this IServiceCollection services){{
             {string.Join("\n", diReceiver.Injections)}
+            return services;
         }}
     }}";
                 context.AddSource("DependencyInjectionHelper_sg.cs", di);

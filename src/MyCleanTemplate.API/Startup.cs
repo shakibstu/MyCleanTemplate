@@ -1,5 +1,8 @@
-﻿using MyCleanTemplate.Application;
+﻿using Microsoft.AspNetCore.Builder;
+using MyCleanTemplate.API.Middleware;
+using MyCleanTemplate.Application;
 using MyCleanTemplate.Infrastructure;
+using Serilog;
 
 namespace MyCleanTemplate.API
 {
@@ -19,9 +22,11 @@ namespace MyCleanTemplate.API
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddAutoMapper(typeof(Startup));
-            services.AddInfrastructureServices(Configuration).AddApplicationServices().InjectSGDependenciesAPI();
+            services.AddInfrastructureServices(Configuration).AddApplicationServices().InjectSGDependenciesAPI()
+                .AddTransient<AddRequestIdToLogContextMiddleware>().AddTransient<LogRequestResponseMiddleware>();
         }
-        public async Task Configure(WebApplication app)
+
+        public static async Task Configure(WebApplication app)
         {
             await app.Services.ConfigureInfrastructure();
 
@@ -36,6 +41,8 @@ namespace MyCleanTemplate.API
             app.UseRouting();
             app.UseHttpsRedirection();
             app.UseAuthorization();
+            app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
+            app.UseMiddleware<LogRequestResponseMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

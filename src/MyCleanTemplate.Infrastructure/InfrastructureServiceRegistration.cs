@@ -1,8 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using MyCleanTemplate.Domain.Abstractions;
+using MyCleanTemplate.Infrastructure.Common;
 using MyCleanTemplate.Infrastructure.Persistence;
+using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
+using Serilog;
 
 namespace MyCleanTemplate.Infrastructure
 {
@@ -10,8 +14,10 @@ namespace MyCleanTemplate.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
+                    .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>())));
+
             services.InjectSGDependenciesInfrastructure();
             return services;
         }
@@ -28,10 +34,13 @@ namespace MyCleanTemplate.Infrastructure
             }
 
             var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
-            var dataSeeders = seeders as IDataSeeder[] ?? seeders.ToArray();
-            var seedTasks = new List<Task>(dataSeeders.Count());
-            seedTasks.AddRange(dataSeeders.OrderBy(o => o.Order).Select(dataSeeder => dataSeeder.SeedAsync()));
-            await Task.WhenAll(seedTasks);
+            var dataSeeders = seeders as List<IDataSeeder> ?? seeders.ToList();
+            dataSeeders = dataSeeders.OrderBy(o => o.Order).ToList();
+
+            foreach (var seeder in dataSeeders)
+            {
+                await seeder.SeedAsync();
+            }
             await db.SaveChangesAsync();
         }
     }
