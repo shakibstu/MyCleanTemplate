@@ -35,7 +35,7 @@ namespace MyCleanTemplate.Infrastructure
 
             var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
             var dataSeeders = seeders as List<IDataSeeder> ?? seeders.ToList();
-            dataSeeders = dataSeeders.OrderBy(o => o.Order).ToList();
+            dataSeeders = dataSeeders.OrderByDescending(o => o.Order).ToList();
 
             foreach (var seeder in dataSeeders)
             {
