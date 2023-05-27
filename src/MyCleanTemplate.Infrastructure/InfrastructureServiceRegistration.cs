@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using MyCleanTemplate.Domain.Abstractions;
-using MyCleanTemplate.Infrastructure.Common;
 using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
 using Serilog;

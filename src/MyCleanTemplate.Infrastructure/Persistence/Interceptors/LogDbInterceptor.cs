@@ -73,7 +73,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
         {
             var parameters = command.Parameters.Cast<DbParameter>().ToList();
 
-            using (LogContext.PushProperty(nameof(LogLevel), LogLevel.DB))
+            using (LogContext.PushProperty(nameof(LogLevel), LogLevel.Db))
             {
                 _logger.Information(command.CommandText + Environment.NewLine + JsonConvert.SerializeObject(new
                 {

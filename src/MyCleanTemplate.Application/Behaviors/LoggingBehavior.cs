@@ -19,7 +19,7 @@ namespace MyCleanTemplate.Application.Behaviors
         {
             using (LogContext.PushProperty(LogKeywords.AppRId, Guid.NewGuid()))
             {
-                using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.RINQAPP)))
+                using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.Rinqapp)))
                 using (LogContext.PushProperty("Action", typeof(TRequest).FullName))
                 {
                     _logger.Information(JsonSerializer.Serialize(request));
@@ -27,7 +27,7 @@ namespace MyCleanTemplate.Application.Behaviors
 
                 var response = await next();
 
-                using (LogContext.PushProperty("LogLevel", nameof(LogLevel.RINPAPP)))
+                using (LogContext.PushProperty("LogLevel", nameof(LogLevel.Rinpapp)))
                 using (LogContext.PushProperty("Action", typeof(TRequest).FullName))
                 {
                     _logger.Information(JsonSerializer.Serialize(response));

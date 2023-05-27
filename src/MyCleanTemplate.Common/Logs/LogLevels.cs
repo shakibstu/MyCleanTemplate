@@ -2,14 +2,14 @@
 {
     public enum LogLevel
     {
-        RINQAPP,
-        RINQAPI,
-        RINPAPP,
-        RINPAPI,
-        DB,
+        Rinqapp,
+        Rinqapi,
+        Rinpapp,
+        Rinpapi,
+        Db,
         //TODO: Use These Levels
-        INFO,
-        WARNING,
-        ERROR,
+        Info,
+        Warning,
+        Error,
     }
 }

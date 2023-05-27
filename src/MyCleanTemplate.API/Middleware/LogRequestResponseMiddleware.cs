@@ -13,11 +13,11 @@ namespace MyCleanTemplate.API.Middleware
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            using var stream = new MemoryStream();
+            using var stream = new MemoryStream(); 
             var originalResponseBody = context.Response.Body;
             context.Response.Body = stream;
 
-            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.RINQAPI)))
+            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.Rinqapi)))
             {
                 context.Request.EnableBuffering();
                 var bodyAsText = await new StreamReader(context.Request.Body).ReadToEndAsync();
@@ -31,7 +31,7 @@ namespace MyCleanTemplate.API.Middleware
 
             await next(context);
 
-            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.RINPAPI)))
+            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.Rinpapi)))
             {
                 stream.Seek(0, SeekOrigin.Begin);
                 var responseBody = await new StreamReader(stream).ReadToEndAsync();

@@ -21,9 +21,9 @@ namespace MyCleanTemplate.Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            var changed = await base.SaveChangesAsync(cancellationToken);
             await _mediator.DispatchDomainEvents(this);
-
-            return await base.SaveChangesAsync(cancellationToken);
+            return changed;
         }
     }
 }
