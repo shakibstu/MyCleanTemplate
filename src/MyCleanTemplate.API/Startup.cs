@@ -18,7 +18,7 @@ public class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        
+
         services.AddInfrastructureServices(Configuration).AddApplicationServices().InjectSGDependenciesAPI()
             .AddTransient<AddRequestIdToLogContextMiddleware>().AddTransient<LogRequestResponseMiddleware>();
     }

@@ -36,7 +36,7 @@ namespace MyCleanTemplate.API.Middleware
                 stream.Seek(0, SeekOrigin.Begin);
                 var responseBody = await new StreamReader(stream).ReadToEndAsync();
                 stream.Seek(0, SeekOrigin.Begin);
-                
+
                 await stream.CopyToAsync(originalResponseBody);
 
                 context.Response.Body = originalResponseBody;

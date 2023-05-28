@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using FluentValidation;
 using MyCleanTemplate.Application.Contract.Abstractions;
 
 namespace MyCleanTemplate.Application

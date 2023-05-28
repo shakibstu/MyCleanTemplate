@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Net;
+﻿using System.Net;
 
 namespace MyCleanTemplate.Domain.Exceptions.Base
 {

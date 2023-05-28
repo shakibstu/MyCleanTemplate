@@ -1,5 +1,5 @@
-﻿using Serilog.Context;
-using MyCleanTemplate.Common.Logs;
+﻿using MyCleanTemplate.Common.Logs;
+using Serilog.Context;
 
 namespace MyCleanTemplate.API.Middleware
 {

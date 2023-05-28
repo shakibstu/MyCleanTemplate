@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MyCleanTemplate.Domain.Test;
-using System.Text.Json;
 using Newtonsoft.Json;
+using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Configurations;

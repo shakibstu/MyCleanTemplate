@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Domain.Exceptions.Base;
+using System.Diagnostics;
 
 namespace MyCleanTemplate.API.Errors
 {

@@ -1,9 +1,9 @@
-﻿using System.Data.Common;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 using MyCleanTemplate.Common.Logs;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Context;
+using System.Data.Common;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {
@@ -29,7 +29,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
             InterceptionResult<int> result,
             CancellationToken cancellationToken = default)
         {
-            SaveLog(command); 
+            SaveLog(command);
             return new ValueTask<InterceptionResult<int>>(result);
         }
 

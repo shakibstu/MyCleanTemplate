@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using MyCleanTemplate.Common.Dependencies;
+using MyCleanTemplate.Common.Logs;
 using Serilog;
 using Serilog.Context;
 using System.Text.Json;
-using MyCleanTemplate.Common.Logs;
 
 namespace MyCleanTemplate.Application.Behaviors
 {
