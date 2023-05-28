@@ -34,12 +34,12 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
-        app.UseExceptionHandler("/api/error");
         app.UseRouting();
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
         app.UseMiddleware<LogRequestResponseMiddleware>();
+        app.UseExceptionHandler("/api/error");
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

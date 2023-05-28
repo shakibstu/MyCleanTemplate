@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
+using MyCleanTemplate.Application.Contract.Abstractions;
 
 namespace MyCleanTemplate.Application
 {
@@ -12,7 +12,7 @@ namespace MyCleanTemplate.Application
             var assembly = typeof(ApplicationServiceRegistration).Assembly;
             services.AddMediatR(assembly);
             services.InjectSGDependenciesApplication();
-            services.AddValidatorsFromAssembly(assembly);
+            services.AddValidatorsFromAssemblyContaining<IApplicationContractAssemblyMarker>();
             return services;
         }
     }

@@ -2,7 +2,6 @@
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Domain.Enums;
 using MyCleanTemplate.Domain.Test;
-using MyCleanTemplate.Domain.ValueObjects;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {

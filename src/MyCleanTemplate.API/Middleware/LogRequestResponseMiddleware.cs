@@ -13,7 +13,7 @@ namespace MyCleanTemplate.API.Middleware
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            using var stream = new MemoryStream(); 
+            using var stream = new MemoryStream();
             var originalResponseBody = context.Response.Body;
             context.Response.Body = stream;
 
@@ -36,7 +36,7 @@ namespace MyCleanTemplate.API.Middleware
                 stream.Seek(0, SeekOrigin.Begin);
                 var responseBody = await new StreamReader(stream).ReadToEndAsync();
                 stream.Seek(0, SeekOrigin.Begin);
-
+                
                 await stream.CopyToAsync(originalResponseBody);
 
                 context.Response.Body = originalResponseBody;

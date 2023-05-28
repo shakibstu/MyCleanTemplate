@@ -1,5 +1,4 @@
 ﻿using MyCleanTemplate.Domain.Enums;
-using MyCleanTemplate.Domain.ValueObjects;
 
 namespace MyCleanTemplate.Domain.Test
 {

@@ -1,6 +1,6 @@
 ﻿using MyCleanTemplate.Domain.Exceptions;
 
-namespace MyCleanTemplate.Domain.ValueObjects
+namespace MyCleanTemplate.Domain.Test
 {
     public class TestValueObject : ValueObject
     {
