@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 using MyCleanTemplate.Common.Logs;
-using Newtonsoft.Json;
 using Serilog;
 using Serilog.Context;
 using System.Data.Common;
@@ -42,7 +41,6 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
             return result;
         }
 
-
         public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(DbCommand command, CommandEventData eventData, InterceptionResult<DbDataReader> result,
             CancellationToken cancellationToken = new CancellationToken())
         {
@@ -73,12 +71,10 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
         {
             var parameters = command.Parameters.Cast<DbParameter>().ToList();
 
-            using (LogContext.PushProperty(nameof(LogLevel), LogLevel.Db))
+            using (LogContext.PushProperty(nameof(LogLevel), LogLevel.DbQuery))
             {
-                _logger.Information(command.CommandText + Environment.NewLine + JsonConvert.SerializeObject(new
-                {
-                    Parameters = parameters.Select(a => new { a.ParameterName, a.Value }),
-                }));
+                _logger.Information("{TextQuery} With {Arguments}", command.CommandText,
+                    parameters.Select(a => new { a.ParameterName, a.Value }));
             }
         }
     }

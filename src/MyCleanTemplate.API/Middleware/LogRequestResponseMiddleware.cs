@@ -17,7 +17,7 @@ namespace MyCleanTemplate.API.Middleware
             var originalResponseBody = context.Response.Body;
             context.Response.Body = stream;
 
-            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.Rinqapi)))
+            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.RequestInApi)))
             {
                 context.Request.EnableBuffering();
                 var bodyAsText = await new StreamReader(context.Request.Body).ReadToEndAsync();
@@ -31,7 +31,7 @@ namespace MyCleanTemplate.API.Middleware
 
             await next(context);
 
-            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.Rinpapi)))
+            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.ResponseApi)))
             {
                 stream.Seek(0, SeekOrigin.Begin);
                 var responseBody = await new StreamReader(stream).ReadToEndAsync();

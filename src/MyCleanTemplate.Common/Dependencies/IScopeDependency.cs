@@ -3,4 +3,7 @@
     public interface IScopeDependency
     {
     }
+    public interface IScopeJustImplementationDependency
+    {
+    }
 }

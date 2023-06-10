@@ -13,7 +13,7 @@ namespace MyCleanTemplate.Application.Test.QueryHandler
         }
         public async Task<object> Handle(TestQuery request, CancellationToken cancellationToken)
         {
-            var x = await _repository.GetAllAfterDate(DateTime.MinValue);
+            var x = await _repository.GetAll();
             return x;
         }
     }

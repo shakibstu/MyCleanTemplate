@@ -51,11 +51,25 @@ namespace MyCleanTemplate.SourceGenerator
 
             var scopeDependencyMetadata =
                 model.Compilation.GetTypeByMetadataName(typeof(IScopeDependency).FullName);
+
             var singletonDependencyMetadata =
                 model.Compilation.GetTypeByMetadataName(typeof(ISingletonDependency).FullName);
+
             var transientDependencyMetadata =
                 model.Compilation.GetTypeByMetadataName(typeof(ITransientDependency).FullName);
 
+            var scopeJustImplementationDependencyMetadata =
+                model.Compilation.GetTypeByMetadataName(typeof(IScopeJustImplementationDependency).FullName);
+
+            var singletonJustImplementationDependencyMetadata =
+                model.Compilation.GetTypeByMetadataName(typeof(ISingletonJustImplementationDependency).FullName);
+
+            var transientJustImplementationDependencyMetadata =
+                model.Compilation.GetTypeByMetadataName(typeof(ITransientJustImplementationDependency).FullName);
+            if (symbol.Name.Contains("TestRepository"))
+            {
+                ;
+            }
             switch (symbol.Interfaces)
             {
                 case var _ when symbol.Interfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, scopeDependencyMetadata)):
@@ -92,6 +106,18 @@ namespace MyCleanTemplate.SourceGenerator
                         Injections.Add(
                             $"services.AddTransient(typeof({GetType(symbol.BaseType)}),typeof({GetType(symbol.OriginalDefinition)}));");
                     }
+                    break;
+
+                case var _ when symbol.Interfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, scopeJustImplementationDependencyMetadata)):
+                    Injections.Add($"services.AddScoped(typeof({GetType(symbol.OriginalDefinition)}));");
+                    break;
+
+                case var _ when symbol.Interfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, singletonJustImplementationDependencyMetadata)):
+                    Injections.Add($"services.AddSingleton(typeof({GetType(symbol.OriginalDefinition)}));");
+                    break;
+
+                case var _ when symbol.AllInterfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, transientJustImplementationDependencyMetadata)):
+                    Injections.Add($"services.AddTransient(typeof({GetType(symbol.OriginalDefinition)}));");
                     break;
             }
         }

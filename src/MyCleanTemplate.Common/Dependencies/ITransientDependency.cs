@@ -3,4 +3,7 @@
     public interface ITransientDependency
     {
     }
+    public interface ITransientJustImplementationDependency
+    {
+    }
 }

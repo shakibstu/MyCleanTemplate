@@ -2,11 +2,12 @@
 {
     public enum LogLevel
     {
-        Rinqapp,
-        Rinqapi,
-        Rinpapp,
-        Rinpapi,
-        Db,
+        RequestInApp = 1,
+        RequestInApi,
+        ResponseApp,
+        ResponseApi,
+        DbQuery,
+        Repo,
         //TODO: Use These Levels
         Info,
         Warning,
