@@ -18,17 +18,19 @@ namespace MyCleanTemplate.Application.Behaviors
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             TResponse? response;
+            using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty(LogKeywords.AppRId, Guid.NewGuid()))
-            using (LogContext.PushProperty(nameof(LogLevel), nameof(LogLevel.RequestInApp)))
-            using (LogContext.PushProperty("Action", typeof(TRequest).FullName))
+            using (LogContext.PushProperty(nameof(LogLevel), LogLevel.RequestInApp))
+            using (LogContext.PushProperty("App.ActionName", typeof(TRequest).FullName))
             {
 
                 _logger.Information(JsonSerializer.Serialize(request));
 
                 response = await next();
 
-                using (LogContext.PushProperty("LogLevel", nameof(LogLevel.ResponseApp)))
-                using (LogContext.PushProperty("Action", typeof(TRequest).FullName))
+                using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
+                using (LogContext.PushProperty(nameof(LogLevel), LogLevel.ResponseApp))
+                using (LogContext.PushProperty("App.ActionName", typeof(TRequest).FullName))
                 {
                     _logger.Information(JsonSerializer.Serialize(response));
                 }

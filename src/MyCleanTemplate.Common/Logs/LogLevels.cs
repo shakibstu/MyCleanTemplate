@@ -10,7 +10,7 @@
         Repo,
         //TODO: Use These Levels
         Info,
-        Warning,
-        Error,
+        Warn,
+        Err,
     }
 }

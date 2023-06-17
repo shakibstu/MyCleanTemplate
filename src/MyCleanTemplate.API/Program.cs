@@ -1,4 +1,7 @@
+using MyCleanTemplate.Common.Logs;
 using Serilog;
+using Serilog.Configuration;
+using LogLevel = MyCleanTemplate.Common.Logs.LogLevel;
 
 namespace MyCleanTemplate.API;
 
@@ -9,8 +12,16 @@ public static class Program
         try
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Host.UseSerilog((context, configuration) =>
-                configuration.ReadFrom.Configuration(context.Configuration));
+            builder.Host.UseSerilog(
+                (context, configuration) =>
+                {
+                    configuration.ReadFrom.Configuration(context.Configuration);
+                    configuration.Filter.ByExcluding(a =>
+                    {
+                        a.Properties.TryGetValue(nameof(LogKeywords.SourceContext), out var value);
+                        return value?.ToString().Replace("\"","") != LogKeywords.SourceContext;
+                    });
+                });
 
             var startup = new Startup(builder.Configuration);
             startup.ConfigureServices(builder.Services);

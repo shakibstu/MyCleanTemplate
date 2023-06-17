@@ -71,6 +71,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
         {
             var parameters = command.Parameters.Cast<DbParameter>().ToList();
 
+            using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.DbQuery))
             {
                 _logger.Information("{TextQuery} With {Arguments}", command.CommandText,
