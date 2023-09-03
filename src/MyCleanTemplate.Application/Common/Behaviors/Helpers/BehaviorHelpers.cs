@@ -1,7 +1,7 @@
 using MediatR;
 using MyCleanTemplate.Domain.Abstractions;
 
-namespace MyCleanTemplate.Application.Behaviors.Helpers;
+namespace MyCleanTemplate.Application.Common.Behaviors.Helpers;
 
 internal static class BehaviorHelpers
 {

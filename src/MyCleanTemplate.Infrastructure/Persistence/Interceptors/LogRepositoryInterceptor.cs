@@ -21,8 +21,11 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
             var arguments = invocation.Arguments;
             try
             {
-                invocation.Proceed();
-                LogRepo(name, arguments, invocation.ReturnValue);
+                using (LogContext.PushProperty("Repository.RId", Guid.NewGuid()))
+                {
+                    invocation.Proceed();
+                    LogRepo(name, arguments, invocation.ReturnValue);
+                }
             }
             catch (Exception ex)
             {
@@ -37,11 +40,12 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
             var valueResponse = response.GetType().GetProperties().First(a => a.Name == "Result").GetValue(response, null);
 
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
-            using (LogContext.PushProperty("Arguments", arguments))
-            using (LogContext.PushProperty("Response", JsonConvert.SerializeObject(valueResponse, Formatting.Indented)))
+            using (LogContext.PushProperty("Repository.Arguments", arguments))
+            using (LogContext.PushProperty("Repository.Response", JsonConvert.SerializeObject(valueResponse)))
+            using (LogContext.PushProperty("Repository.MethodName", name))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.Repo))
             {
-                _logger.Information("Repository -> {Method}", name);
+                _logger.Information("Repository Response");
             }
         }
     }

@@ -6,7 +6,8 @@ using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {
-    internal class TestRepository : BaseRepository<TestEntity>, ITestRepository, IScopeJustImplementationDependency
+    [Repository]
+    internal class TestRepository : BaseRepository<TestEntity>, ITestRepository
     {
         private readonly DbSet<TestEntity> _entities;
         public TestRepository(ApplicationDbContext context) : base(context)

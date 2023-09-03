@@ -1,7 +1,5 @@
 using MyCleanTemplate.Common.Logs;
 using Serilog;
-using Serilog.Configuration;
-using LogLevel = MyCleanTemplate.Common.Logs.LogLevel;
 
 namespace MyCleanTemplate.API;
 
@@ -19,7 +17,7 @@ public static class Program
                     configuration.Filter.ByExcluding(a =>
                     {
                         a.Properties.TryGetValue(nameof(LogKeywords.SourceContext), out var value);
-                        return value?.ToString().Replace("\"","") != LogKeywords.SourceContext;
+                        return value?.ToString().Replace("\"", "") != LogKeywords.SourceContext;
                     });
                 });
 

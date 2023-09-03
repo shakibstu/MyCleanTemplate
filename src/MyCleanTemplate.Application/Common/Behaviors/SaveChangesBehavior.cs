@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using MyCleanTemplate.Application.Behaviors.Helpers;
+using MyCleanTemplate.Application.Common.Behaviors.Helpers;
 using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
 using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Domain.Abstractions;
 
-namespace MyCleanTemplate.Application.Behaviors
+namespace MyCleanTemplate.Application.Common.Behaviors
 {
     internal class SaveChangesBehaviorWithResponse<TRequest, TResponse> : ITransientDependency, IPipelineBehavior<TRequest, TResponse> where TRequest : ICommand<TResponse>
     {

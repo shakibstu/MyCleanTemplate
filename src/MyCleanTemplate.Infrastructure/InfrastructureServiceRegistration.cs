@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions;
-using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
-using MyCleanTemplate.Infrastructure.Tests;
 using Serilog;
 
 namespace MyCleanTemplate.Infrastructure
@@ -20,14 +18,6 @@ namespace MyCleanTemplate.Infrastructure
                     .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>())));
 
             services.AddSingleton(new ProxyGenerator());
-
-            services.AddScoped(typeof(ITestRepository), serviceProvider =>
-            {
-                var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
-                var actual = serviceProvider.GetRequiredService<TestRepository>();
-                ILogRepositoryInterceptor[] interceptors = serviceProvider.GetServices<ILogRepositoryInterceptor>().ToArray();
-                return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(ITestRepository), actual, interceptors);
-            });
 
             services.InjectSGDependenciesInfrastructure();
             return services;

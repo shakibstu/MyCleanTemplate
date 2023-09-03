@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 using MyCleanTemplate.Common.Logs;
+using Newtonsoft.Json;
 using Serilog;
 using Serilog.Context;
 using System.Data.Common;
@@ -73,9 +74,10 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.DbQuery))
+            using (LogContext.PushProperty("Query.TextQuery", command.CommandText))
+            using (LogContext.PushProperty("Query.Arguments", JsonConvert.SerializeObject(parameters.Select(a => new { a.ParameterName, a.Value }))))
             {
-                _logger.Information("{TextQuery} With {Arguments}", command.CommandText,
-                    parameters.Select(a => new { a.ParameterName, a.Value }));
+                _logger.Information(@"Query Run");
             }
         }
     }

@@ -18,9 +18,7 @@ public class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-
-        services.AddInfrastructureServices(Configuration).AddApplicationServices().InjectSGDependenciesAPI()
-            .AddTransient<AddRequestIdToLogContextMiddleware>().AddTransient<LogRequestResponseMiddleware>();
+        services.AddInfrastructureServices(Configuration).AddApplicationServices().InjectSGDependenciesAPI();
     }
 
     public static async Task Configure(WebApplication app)

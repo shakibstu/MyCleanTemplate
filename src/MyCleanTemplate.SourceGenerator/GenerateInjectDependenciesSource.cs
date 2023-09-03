@@ -66,9 +66,15 @@ namespace MyCleanTemplate.SourceGenerator
 
             var transientJustImplementationDependencyMetadata =
                 model.Compilation.GetTypeByMetadataName(typeof(ITransientJustImplementationDependency).FullName);
-            if (symbol.Name.Contains("TestRepository"))
+
+            var repositoryAttribute = model.Compilation.GetTypeByMetadataName(typeof(RepositoryAttribute).FullName);
+            var attributes = symbol.GetAttributes();
+            if (attributes.Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, repositoryAttribute)))
             {
-                ;
+                Injections.AddRange(
+                    symbol.Interfaces.Where(a => a.Name == $"I{symbol.Name}")
+                        .Select(a =>
+                            $"MyCleanTemplate.Infrastructure.Helpers.InjectionHelpers.AddRepository<{GetType(a)},{GetType(symbol.OriginalDefinition)}>(services);"));
             }
             switch (symbol.Interfaces)
             {

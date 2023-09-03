@@ -1,9 +1,10 @@
+
 using FluentValidation;
 using MediatR;
 using MyCleanTemplate.Common.Dependencies;
-using MyCleanTemplate.Domain.Exceptions.Base;
+using ValidationException = MyCleanTemplate.Application.Common.Exceptions.ValidationException;
 
-namespace MyCleanTemplate.Application.Behaviors;
+namespace MyCleanTemplate.Application.Common.Behaviors;
 
 internal class ValidationBehavior<TRequest, TResponse> : ITransientDependency, IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
@@ -34,7 +35,7 @@ internal class ValidationBehavior<TRequest, TResponse> : ITransientDependency, I
             .ToDictionary(x => x.Key, x => x.Values);
         if (errorsDictionary.Any())
         {
-            throw new BadRequestException("Validation Failed!", errorsDictionary);
+            throw new ValidationException("Validation Failed!", errorsDictionary);
         }
         return await next();
     }
