@@ -14,5 +14,9 @@
     <ProjectReference Include="..\MyCleanTemplate.Application\MyCleanTemplate.Application.csproj" />
     <ProjectReference Include="..\MyCleanTemplate.SourceGenerator\MyCleanTemplate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
-
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>MyCleanTemplate.IntegrationTest</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

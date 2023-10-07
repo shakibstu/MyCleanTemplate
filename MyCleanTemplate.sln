@@ -17,9 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.Domain", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.Infrastructure", "src\MyCleanTemplate.Infrastructure\MyCleanTemplate.Infrastructure.csproj", "{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.Common", "src\MyCleanTemplate.Common\MyCleanTemplate.Common.csproj", "{D58B337D-722D-4BCF-B301-AC25ED2DFB20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.Common", "src\MyCleanTemplate.Common\MyCleanTemplate.Common.csproj", "{D58B337D-722D-4BCF-B301-AC25ED2DFB20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.SourceGenerator", "src\MyCleanTemplate.SourceGenerator\MyCleanTemplate.SourceGenerator.csproj", "{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCleanTemplate.SourceGenerator", "src\MyCleanTemplate.SourceGenerator\MyCleanTemplate.SourceGenerator.csproj", "{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.IntegrationTest", "test\MyCleanTemplate.IntegrationTest\MyCleanTemplate.IntegrationTest.csproj", "{B29A2BED-A6DE-459A-8253-2C4EB6FA1FB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCleanTemplate.UnitTest", "test\MyCleanTemplate.UnitTest\MyCleanTemplate.UnitTest.csproj", "{0130E2E3-2422-4EF6-9CB5-A817D2BD04A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +59,14 @@ Global
 		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B29A2BED-A6DE-459A-8253-2C4EB6FA1FB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B29A2BED-A6DE-459A-8253-2C4EB6FA1FB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B29A2BED-A6DE-459A-8253-2C4EB6FA1FB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B29A2BED-A6DE-459A-8253-2C4EB6FA1FB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0130E2E3-2422-4EF6-9CB5-A817D2BD04A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0130E2E3-2422-4EF6-9CB5-A817D2BD04A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0130E2E3-2422-4EF6-9CB5-A817D2BD04A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0130E2E3-2422-4EF6-9CB5-A817D2BD04A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +79,8 @@ Global
 		{C48D0AD7-8EC9-4D8B-8E11-33F8AE6FD753} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
 		{D58B337D-722D-4BCF-B301-AC25ED2DFB20} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
 		{DA585CFC-1DD8-42C2-89A5-D70C6F5BBA8A} = {A17250F5-DD58-472D-8A20-8F47D4C9447B}
+		{B29A2BED-A6DE-459A-8253-2C4EB6FA1FB8} = {7A1B07EB-B6FB-4AF2-B035-C6A374608AA2}
+		{0130E2E3-2422-4EF6-9CB5-A817D2BD04A4} = {7A1B07EB-B6FB-4AF2-B035-C6A374608AA2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {008BE751-199E-4BBD-9162-036380A44416}
