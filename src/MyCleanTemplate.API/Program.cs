@@ -5,7 +5,6 @@ using MyCleanTemplate.Common.Logs;
 using MyCleanTemplate.Infrastructure;
 using Serilog;
 
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog(
     (context, configuration) =>
@@ -38,4 +37,5 @@ app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
 app.UseMiddleware<LogRequestResponseMiddleware>();
 app.UseExceptionHandler("/api/error");
 await app.RunAsync();
+
 public partial class Program { }

@@ -12,12 +12,14 @@ namespace MyCleanTemplate.IntegrationTest.Automation
     public abstract class BaseIntegrationTest : WebApplicationFactory<Program>
     {
         protected readonly HttpClient HttpClient;
-        protected readonly IServiceProvider ServiceProvider;
+        
+        protected IServiceProvider ServiceProvider => Scope.ServiceProvider;
 
+        protected readonly IServiceScope Scope;
         protected BaseIntegrationTest()
         {
             HttpClient = CreateClient();
-            ServiceProvider = Services.CreateScope().ServiceProvider;
+            Scope = Services.CreateScope();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -31,6 +33,17 @@ namespace MyCleanTemplate.IntegrationTest.Automation
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlite(connection));
             });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            HttpClient.Dispose();
+            Scope.Dispose();
+            base.Dispose(disposing);
+        }
+        ~BaseIntegrationTest()
+        {
+            Dispose(false);
         }
     }
 }
