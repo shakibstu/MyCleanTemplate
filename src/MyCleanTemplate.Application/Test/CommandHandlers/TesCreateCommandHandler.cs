@@ -6,7 +6,7 @@ namespace MyCleanTemplate.Application.Test.CommandHandlers;
 
 public class TesCreateCommandHandler : ICommandHandler<CreateTestCommand>
 {
-    public Task<Unit> Handle(CreateTestCommand request, CancellationToken cancellationToken)
+    public Task Handle(CreateTestCommand request, CancellationToken cancellationToken)
     {
         Console.WriteLine("s");
         return Unit.Task;

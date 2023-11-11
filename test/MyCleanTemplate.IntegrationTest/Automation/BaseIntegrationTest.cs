@@ -4,18 +4,17 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyCleanTemplate.API;
 using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.IntegrationTest.Automation
 {
-    [TestClass]
-    public sealed class BaseIntegrationTest : WebApplicationFactory<Startup>
+    public abstract class BaseIntegrationTest : WebApplicationFactory<Program>
     {
         protected readonly HttpClient HttpClient;
         protected readonly IServiceProvider ServiceProvider;
-        public BaseIntegrationTest()
+
+        protected BaseIntegrationTest()
         {
             HttpClient = CreateClient();
             ServiceProvider = Services.CreateScope().ServiceProvider;

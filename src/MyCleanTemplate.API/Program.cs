@@ -1,40 +1,41 @@
+using MyCleanTemplate.API;
+using MyCleanTemplate.API.Middleware;
+using MyCleanTemplate.Application;
 using MyCleanTemplate.Common.Logs;
+using MyCleanTemplate.Infrastructure;
 using Serilog;
 
-namespace MyCleanTemplate.API;
 
-public static class Program
-{
-    public static async Task Main(string[] args)
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog(
+    (context, configuration) =>
     {
-        try
+        configuration.ReadFrom.Configuration(context.Configuration);
+        configuration.Filter.ByExcluding(a =>
         {
-            var builder = WebApplication.CreateBuilder(args);
-            builder.Host.UseSerilog(
-                (context, configuration) =>
-                {
-                    configuration.ReadFrom.Configuration(context.Configuration);
-                    configuration.Filter.ByExcluding(a =>
-                    {
-                        a.Properties.TryGetValue(nameof(LogKeywords.SourceContext), out var value);
-                        return value?.ToString().Replace("\"", "") != LogKeywords.SourceContext;
-                    });
-                });
+            a.Properties.TryGetValue(nameof(LogKeywords.SourceContext), out var value);
+            return value?.ToString().Replace("\"", "") != LogKeywords.SourceContext;
+        });
+    });
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectSGDependenciesAPI();
+var app = builder.Build();
+await app.Services.ConfigureInfrastructure();
 
-            var startup = new Startup(builder.Configuration);
-            startup.ConfigureServices(builder.Services);
-            var app = builder.Build();
-            await Startup.Configure(app);
-            await app.RunAsync();
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal(ex, "Application terminated unexpectedly");
-        }
-        finally
-        {
-            await Log.CloseAndFlushAsync();
-        }
-
-    }
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseRouting().UseEndpoints(endpoints => { endpoints.MapControllers(); });
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
+app.UseMiddleware<LogRequestResponseMiddleware>();
+app.UseExceptionHandler("/api/error");
+await app.RunAsync();
+public partial class Program { }

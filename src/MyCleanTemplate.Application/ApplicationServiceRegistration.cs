@@ -10,7 +10,7 @@ namespace MyCleanTemplate.Application
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             var assembly = typeof(ApplicationServiceRegistration).Assembly;
-            services.AddMediatR(assembly);
+            services.AddMediatR(a=> a.RegisterServicesFromAssembly(assembly));
             services.InjectSGDependenciesApplication();
             services.AddValidatorsFromAssemblyContaining<IApplicationContractAssemblyMarker>();
             return services;

@@ -20,7 +20,8 @@ public class TestController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> GetCurrencies([FromBody] CreateTestRequest request)
     {
-        return Ok(await _mediator.Send(new CreateTestCommand(request.Name, DateTime.Now)));
+        await _mediator.Send(new CreateTestCommand(request.Name, DateTime.Now));
+        return Ok();
     }
 
     [HttpPost]
