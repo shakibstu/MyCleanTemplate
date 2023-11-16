@@ -1,7 +1,7 @@
 ﻿using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Common.Logs;
-using Newtonsoft.Json;
 using Serilog.Context;
+using System.Text.Json;
 using ILogger = Serilog.ILogger;
 using LogLevel = MyCleanTemplate.Common.Logs.LogLevel;
 
@@ -28,7 +28,7 @@ namespace MyCleanTemplate.API.Middleware
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.RequestInApi))
             using (LogContext.PushProperty("API.RequestBody", bodyAsText))
-            using (LogContext.PushProperty("API.QueryParams", JsonConvert.SerializeObject(context.Request.Query.Select(a => new { a.Key, a.Value }))))
+            using (LogContext.PushProperty("API.QueryParams", JsonSerializer.Serialize(context.Request.Query.Select(a => new { a.Key, a.Value }))))
             using (LogContext.PushProperty("API.ActionName", context.GetEndpoint()?.DisplayName))
             using (LogContext.PushProperty("API.Path", context.Request.Path))
             {

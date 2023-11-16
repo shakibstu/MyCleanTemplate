@@ -4,7 +4,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using MyCleanTemplate.API;
 using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.IntegrationTest.Automation
@@ -12,7 +11,7 @@ namespace MyCleanTemplate.IntegrationTest.Automation
     public abstract class BaseIntegrationTest : WebApplicationFactory<Program>
     {
         protected readonly HttpClient HttpClient;
-        
+
         protected IServiceProvider ServiceProvider => Scope.ServiceProvider;
 
         protected readonly IServiceScope Scope;

@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Common.Logs;
-using Newtonsoft.Json;
 using Serilog;
 using Serilog.Context;
+using System.Text.Json;
 
 namespace MyCleanTemplate.Application.Common.Behaviors
 {
@@ -22,7 +22,7 @@ namespace MyCleanTemplate.Application.Common.Behaviors
             using (LogContext.PushProperty(LogKeywords.AppRId, Guid.NewGuid()))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.RequestInApp))
             using (LogContext.PushProperty("APP.ActionName", request.GetType().Name))
-            using (LogContext.PushProperty("APP.Request", JsonConvert.SerializeObject(request)))
+            using (LogContext.PushProperty("APP.Request", JsonSerializer.Serialize(request)))
             {
 
                 _logger.Information($"APP.RequestType -> {request.GetType().Name}");
@@ -31,7 +31,7 @@ namespace MyCleanTemplate.Application.Common.Behaviors
             }
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.ResponseApp))
-            using (LogContext.PushProperty("APP.Response", JsonConvert.SerializeObject(response)))
+            using (LogContext.PushProperty("APP.Response", JsonSerializer.Serialize(response)))
             {
                 _logger.Information($"APP.ResponseType -> {response?.GetType().Name}");
             }

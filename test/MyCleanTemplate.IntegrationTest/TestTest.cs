@@ -1,6 +1,6 @@
-﻿using System.Net.Http.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyCleanTemplate.IntegrationTest.Automation;
+using System.Net.Http.Json;
 
 namespace MyCleanTemplate.IntegrationTest
 {

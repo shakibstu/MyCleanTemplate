@@ -2,9 +2,9 @@
 using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Common.Logs;
 using MyCleanTemplate.Domain.Abstractions;
-using Newtonsoft.Json;
 using Serilog;
 using Serilog.Context;
+using System.Text.Json;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {
@@ -41,7 +41,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty("Repository.Arguments", arguments))
-            using (LogContext.PushProperty("Repository.Response", JsonConvert.SerializeObject(valueResponse)))
+            using (LogContext.PushProperty("Repository.Response", JsonSerializer.Serialize(valueResponse)))
             using (LogContext.PushProperty("Repository.MethodName", name))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.Repo))
             {

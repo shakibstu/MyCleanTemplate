@@ -30,12 +30,12 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+app.UseExceptionHandler("/api/error");
 app.UseRouting().UseEndpoints(endpoints => { endpoints.MapControllers(); });
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
 app.UseMiddleware<LogRequestResponseMiddleware>();
-app.UseExceptionHandler("/api/error");
 await app.RunAsync();
 
 public partial class Program { }

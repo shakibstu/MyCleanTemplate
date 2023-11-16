@@ -1,4 +1,5 @@
 ﻿using MyCleanTemplate.Domain.Exceptions;
+using System.Text.Json.Serialization;
 
 namespace MyCleanTemplate.Domain.Test
 {
@@ -10,6 +11,7 @@ namespace MyCleanTemplate.Domain.Test
         public string Country { get; }
         public string ZipCode { get; }
         private TestValueObject() { }
+        [JsonConstructor]
         private TestValueObject(string street, string city, string state, string country, string zipCode)
         {
             Street = street;

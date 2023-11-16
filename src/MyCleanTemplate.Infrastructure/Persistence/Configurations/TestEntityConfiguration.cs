@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MyCleanTemplate.Domain.Test;
-using Newtonsoft.Json;
 using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -17,7 +16,7 @@ internal class TestEntityConfiguration : IEntityTypeConfiguration<TestEntity>
 
         builder.Property(a => a.TestValueObjectJson)
             .HasConversion(x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
-                y => JsonConvert.DeserializeObject<TestValueObject>(y));
+                y => JsonSerializer.Deserialize<TestValueObject>(y, (JsonSerializerOptions)null));
 
         builder.OwnsOne(t => t.TestValueObject, sb =>
         {
@@ -30,7 +29,7 @@ internal class TestEntityConfiguration : IEntityTypeConfiguration<TestEntity>
 
 
         builder.Property(a => a.TestValueObjectList)
-            .HasConversion(x => JsonConvert.SerializeObject(x),
-                y => JsonConvert.DeserializeObject<List<TestValueObject>>(y));
+            .HasConversion(x => JsonSerializer.Serialize(x, (JsonSerializerOptions)null),
+                y => JsonSerializer.Deserialize<List<TestValueObject>>(y, (JsonSerializerOptions)null));
     }
 }
