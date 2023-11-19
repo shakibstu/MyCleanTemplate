@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using Serilog.Context;
-using System.Text.Json;
 using MyCleanTemplate.Domain.Common.Logs;
+using Serilog.Context;
 using ServiceGenerator;
+using System.Text.Json;
 using ILogger = Serilog.ILogger;
 
 namespace MyCleanTemplate.Application.Common.Behaviors
@@ -20,9 +20,7 @@ namespace MyCleanTemplate.Application.Common.Behaviors
             using (LogContext.PushProperty("APP.ActionName", request.GetType().Name))
             using (LogContext.PushProperty("APP.Request", JsonSerializer.Serialize(request)))
             {
-
                 logger.Information($"APP.RequestType -> {request.GetType().Name}");
-
                 response = await next();
             }
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))

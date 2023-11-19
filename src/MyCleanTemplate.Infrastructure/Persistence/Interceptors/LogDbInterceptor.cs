@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+using MyCleanTemplate.Domain.Common.Logs;
 using Serilog;
 using Serilog.Context;
 using System.Data.Common;
 using System.Text.Json;
-using MyCleanTemplate.Domain.Common.Logs;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {
