@@ -1,14 +1,9 @@
 ﻿namespace MyCleanTemplate.Domain.Common
 {
-    public abstract class BaseAuditableEntity : BaseEntity
+    public abstract class BaseAuditableEntity(Guid id) : BaseEntity(id)
     {
-        public DateTime Created { get; private init; }
+        public DateTime Created { get; private init; } = DateTime.UtcNow;
 
         public DateTime? LastModified { get; set; }
-
-        protected BaseAuditableEntity(Guid id) : base(id)
-        {
-            Created = DateTime.UtcNow;
-        }
     }
 }

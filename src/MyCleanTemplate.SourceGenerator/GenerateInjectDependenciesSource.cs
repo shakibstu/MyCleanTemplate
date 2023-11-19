@@ -1,8 +1,6 @@
-﻿
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MyCleanTemplate.Common.Dependencies;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +19,7 @@ namespace MyCleanTemplate.SourceGenerator
             if (context.SyntaxContextReceiver is DiReceiver diReceiver)
             {
                 var di = $@"  
-    namespace {context.Compilation.AssemblyName};
+    namespace ServiceGenerator;
     using Microsoft.Extensions.DependencyInjection;
     public static class DependencyInjectionHelper
     {{
@@ -29,7 +27,8 @@ namespace MyCleanTemplate.SourceGenerator
             {string.Join("\n", diReceiver.Injections)}
             return services;
         }}
-    }}";
+    }}
+";
                 context.AddSource("DependencyInjectionHelper_sg.cs", di);
             }
         }
@@ -49,38 +48,32 @@ namespace MyCleanTemplate.SourceGenerator
                 model.GetDeclaredSymbol(classDeclaration);
             if (symbol == null) return;
 
-            var scopeDependencyMetadata =
-                model.Compilation.GetTypeByMetadataName(typeof(IScopeDependency).FullName);
+            var scopeDependencyFullName = "IScopeDependency.ServiceGenerator";
 
-            var singletonDependencyMetadata =
-                model.Compilation.GetTypeByMetadataName(typeof(ISingletonDependency).FullName);
+            var singletonDependencyFullName = "ServiceGenerator.ISingletonDependency";
 
-            var transientDependencyMetadata =
-                model.Compilation.GetTypeByMetadataName(typeof(ITransientDependency).FullName);
+            var transientDependencyFullName = "ServiceGenerator.ITransientDependency";
 
-            var scopeJustImplementationDependencyMetadata =
-                model.Compilation.GetTypeByMetadataName(typeof(IScopeJustImplementationDependency).FullName);
+            var scopeJustImplementationDependencyFullName = "ServiceGenerator.IScopeJustImplementationDependency";
 
-            var singletonJustImplementationDependencyMetadata =
-                model.Compilation.GetTypeByMetadataName(typeof(ISingletonJustImplementationDependency).FullName);
+            var singletonJustImplementationDependencyFullName = "ServiceGenerator.ISingletonJustImplementationDependency";
 
-            var transientJustImplementationDependencyMetadata =
-                model.Compilation.GetTypeByMetadataName(typeof(ITransientJustImplementationDependency).FullName);
+            var transientJustImplementationDependencyFullName = "ServiceGenerator.ITransientJustImplementationDependency";
 
-            var repositoryAttribute = model.Compilation.GetTypeByMetadataName(typeof(RepositoryAttribute).FullName);
+            var repositoryAttributeFullName = "ServiceGenerator.RepositoryAttribute";
             var attributes = symbol.GetAttributes();
-            if (attributes.Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, repositoryAttribute)))
+            if (attributes.Any(a => GetType(a.AttributeClass!) == repositoryAttributeFullName))
             {
                 Injections.AddRange(
                     symbol.Interfaces.Where(a => a.Name == $"I{symbol.Name}")
                         .Select(a =>
-                            $"MyCleanTemplate.Infrastructure.Helpers.InjectionHelpers.AddRepository<{GetType(a)},{GetType(symbol.OriginalDefinition)}>(services);"));
+                            $"InjectionHelpers.AddRepository<{GetType(a)},{GetType(symbol.OriginalDefinition)}>(services);"));
             }
             switch (symbol.Interfaces)
             {
-                case var _ when symbol.Interfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, scopeDependencyMetadata)):
+                case var _ when symbol.Interfaces.Any(a => GetType(a) == scopeDependencyFullName):
                     Injections.AddRange(
-                        symbol.Interfaces.Where(a => !SymbolEqualityComparer.Default.Equals(a, scopeDependencyMetadata))
+                        symbol.Interfaces.Where(a => GetType(a) != scopeDependencyFullName)
                             .Select(a =>
                                 $"services.AddScoped(typeof({GetType(a)}),typeof({GetType(symbol.OriginalDefinition)}));"));
                     if (symbol.BaseType is { IsAbstract: true, DeclaredAccessibility: Accessibility.Public })
@@ -90,9 +83,9 @@ namespace MyCleanTemplate.SourceGenerator
                     }
                     break;
 
-                case var _ when symbol.Interfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, singletonDependencyMetadata)):
+                case var _ when symbol.Interfaces.Any(a => GetType(a) == singletonDependencyFullName):
                     Injections.AddRange(
-                        symbol.Interfaces.Where(a => !SymbolEqualityComparer.Default.Equals(a, singletonDependencyMetadata))
+                        symbol.Interfaces.Where(a => GetType(a) != singletonDependencyFullName)
                             .Select(a =>
                                 $"services.AddSingleton(typeof({GetType(a)}),typeof({GetType(symbol.OriginalDefinition)}));"));
                     if (symbol.BaseType is { IsAbstract: true, DeclaredAccessibility: Accessibility.Public })
@@ -102,9 +95,9 @@ namespace MyCleanTemplate.SourceGenerator
                     }
                     break;
 
-                case var _ when symbol.AllInterfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, transientDependencyMetadata)):
+                case var _ when symbol.AllInterfaces.Any(a => GetType(a) == transientDependencyFullName):
                     Injections.AddRange(
-                        symbol.Interfaces.Where(a => !SymbolEqualityComparer.Default.Equals(a, transientDependencyMetadata))
+                        symbol.Interfaces.Where(a => GetType(a) != transientDependencyFullName)
                             .Select(a =>
                                 $"services.AddTransient(typeof({GetType(a)}),typeof({GetType(symbol.OriginalDefinition)}));"));
                     if (symbol.BaseType is { IsAbstract: true, DeclaredAccessibility: Accessibility.Public })
@@ -114,15 +107,15 @@ namespace MyCleanTemplate.SourceGenerator
                     }
                     break;
 
-                case var _ when symbol.Interfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, scopeJustImplementationDependencyMetadata)):
+                case var _ when symbol.Interfaces.Any(a => GetType(a) == scopeJustImplementationDependencyFullName):
                     Injections.Add($"services.AddScoped(typeof({GetType(symbol.OriginalDefinition)}));");
                     break;
 
-                case var _ when symbol.Interfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, singletonJustImplementationDependencyMetadata)):
+                case var _ when symbol.Interfaces.Any(a => GetType(a) == singletonJustImplementationDependencyFullName):
                     Injections.Add($"services.AddSingleton(typeof({GetType(symbol.OriginalDefinition)}));");
                     break;
 
-                case var _ when symbol.AllInterfaces.Any(a => SymbolEqualityComparer.Default.Equals(a, transientJustImplementationDependencyMetadata)):
+                case var _ when symbol.AllInterfaces.Any(a => GetType(a) == transientJustImplementationDependencyFullName):
                     Injections.Add($"services.AddTransient(typeof({GetType(symbol.OriginalDefinition)}));");
                     break;
             }

@@ -1,6 +1,6 @@
-﻿using MyCleanTemplate.Common.Dependencies;
-using MyCleanTemplate.Common.Logs;
+﻿using MyCleanTemplate.Domain.Common.Logs;
 using Serilog.Context;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.API.Middleware
 {

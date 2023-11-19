@@ -6,6 +6,7 @@ using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
 using Serilog;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure
 {

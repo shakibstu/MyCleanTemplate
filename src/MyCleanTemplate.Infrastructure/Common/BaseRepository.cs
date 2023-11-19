@@ -6,16 +6,11 @@ using System.Linq.Expressions;
 
 namespace MyCleanTemplate.Infrastructure.Common
 {
-    internal abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
+    internal abstract class BaseRepository<T>(ApplicationDbContext context) : IBaseRepository<T>
+        where T : BaseEntity
     {
-        private readonly ApplicationDbContext _context;
-        private readonly DbSet<T> _dbSet;
+        private readonly DbSet<T> _dbSet = context.Set<T>();
 
-        protected BaseRepository(ApplicationDbContext context)
-        {
-            _context = context;
-            _dbSet = context.Set<T>();
-        }
         public Task<int> Count()
         {
             return _dbSet.CountAsync();
@@ -30,20 +25,20 @@ namespace MyCleanTemplate.Infrastructure.Common
         {
             var addRangeAsync = entity.ToList();
             _dbSet.AddRange(addRangeAsync);
-            return autoSave ? _context.SaveChangesAsync() : Task.CompletedTask;
+            return autoSave ? context.SaveChangesAsync() : Task.CompletedTask;
         }
 
         public virtual Task Add(T entity, bool autoSave = false)
         {
             _dbSet.Add(entity);
-            return autoSave ? _context.SaveChangesAsync() : Task.CompletedTask;
+            return autoSave ? context.SaveChangesAsync() : Task.CompletedTask;
         }
 
         public virtual Task Update(T entity, bool autoSave = false)
         {
             _dbSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
-            return autoSave ? _context.SaveChangesAsync() : Task.CompletedTask;
+            context.Entry(entity).State = EntityState.Modified;
+            return autoSave ? context.SaveChangesAsync() : Task.CompletedTask;
         }
 
         public virtual async Task<T> Get(Guid id)
@@ -66,7 +61,7 @@ namespace MyCleanTemplate.Infrastructure.Common
             var entity = await Get(id);
             if (entity is not null)
             {
-                if (_context.Entry(entity).State == EntityState.Detached)
+                if (context.Entry(entity).State == EntityState.Detached)
                 {
                     _dbSet.Attach(entity);
                 }
@@ -74,7 +69,7 @@ namespace MyCleanTemplate.Infrastructure.Common
             }
             if (autoSave)
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
     }

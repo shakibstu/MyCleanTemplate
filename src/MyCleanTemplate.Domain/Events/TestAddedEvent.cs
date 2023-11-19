@@ -2,13 +2,8 @@
 
 namespace MyCleanTemplate.Domain.Events
 {
-    public class TestAddedEvent : BaseEvent
+    public class TestAddedEvent(TestEntity addedTestEntity) : BaseEvent
     {
-        public TestAddedEvent(TestEntity addedTestEntity)
-        {
-            AddedTestEntity = addedTestEntity;
-        }
-
-        public TestEntity AddedTestEntity { get; }
+        public TestEntity AddedTestEntity { get; } = addedTestEntity;
     }
 }

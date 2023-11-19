@@ -3,11 +3,5 @@ using MyCleanTemplate.Domain.Exceptions.Base;
 
 namespace MyCleanTemplate.Domain.Exceptions
 {
-    public class UnsupportedZipCodeException : BadRequestException
-    {
-        public UnsupportedZipCodeException(string zipCode) : base($"ZipCode \"{zipCode}\" is unsupported.", new Dictionary<string, string[]>())
-        {
-
-        }
-    }
+    public class UnsupportedZipCodeException(string zipCode) : BadRequestException($"ZipCode \"{zipCode}\" is unsupported.", new Dictionary<string, string[]>());
 }

@@ -4,6 +4,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using MyCleanTemplate.API;
 using MyCleanTemplate.Infrastructure.Persistence;
 
 namespace MyCleanTemplate.IntegrationTest.Automation

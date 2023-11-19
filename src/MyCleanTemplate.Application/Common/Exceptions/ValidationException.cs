@@ -2,10 +2,5 @@
 
 namespace MyCleanTemplate.Application.Common.Exceptions
 {
-    public class ValidationException : BadRequestException
-    {
-        public ValidationException(string message, IDictionary<string, string[]> data) : base(message, data)
-        {
-        }
-    }
+    public class ValidationException(string message, IDictionary<string, string[]> data) : BadRequestException(message, data);
 }

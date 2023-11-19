@@ -2,10 +2,5 @@
 
 namespace MyCleanTemplate.Domain.Exceptions.Base
 {
-    public class BadRequestException : GlobalBaseException
-    {
-        public BadRequestException(string message, IDictionary<string, string[]> data) : base(message, data, HttpStatusCode.BadRequest)
-        {
-        }
-    }
+    public class BadRequestException(string message, IDictionary<string, string[]> data) : GlobalBaseException(message, data, HttpStatusCode.BadRequest);
 }

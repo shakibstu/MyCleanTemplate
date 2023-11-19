@@ -2,8 +2,5 @@
 
 namespace MyCleanTemplate.Domain.Exceptions.Base
 {
-    public class NotFoundException : GlobalBaseException
-    {
-        public NotFoundException(string message, IDictionary<string, string[]> data) : base(message, data, HttpStatusCode.NotFound) { }
-    }
+    public class NotFoundException(string message, IDictionary<string, string[]> data) : GlobalBaseException(message, data, HttpStatusCode.NotFound);
 }

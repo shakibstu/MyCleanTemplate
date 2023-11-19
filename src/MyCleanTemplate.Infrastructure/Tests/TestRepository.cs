@@ -1,19 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Common;
 using MyCleanTemplate.Infrastructure.Persistence;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {
     [Repository]
-    internal class TestRepository : BaseRepository<TestEntity>, ITestRepository
+    internal class TestRepository(ApplicationDbContext context) : BaseRepository<TestEntity>(context), ITestRepository
     {
-        private readonly DbSet<TestEntity> _entities;
-        public TestRepository(ApplicationDbContext context) : base(context)
-        {
-            _entities = context.Tests;
-        }
+        private readonly DbSet<TestEntity> _entities = context.Tests;
 
         public Task<List<TestEntity>> GetAllAfterDate(DateTime date)
         {

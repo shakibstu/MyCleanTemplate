@@ -2,17 +2,12 @@
 
 namespace MyCleanTemplate.Domain.Common
 {
-    public abstract class BaseEntity : IEquatable<BaseEntity>
+    public abstract class BaseEntity(Guid id) : IEquatable<BaseEntity>
     {
 
-        public Guid Id { get; private init; }
+        public Guid Id { get; private init; } = id;
 
         private readonly List<BaseEvent> _domainEvents = new();
-
-        protected BaseEntity(Guid id)
-        {
-            Id = id;
-        }
 
         [NotMapped]
         public IReadOnlyCollection<BaseEvent> DomainEvents => _domainEvents.AsReadOnly();

@@ -2,8 +2,5 @@
 
 namespace MyCleanTemplate.Domain.Exceptions.Base
 {
-    public class UnAuthorizedException : GlobalBaseException
-    {
-        public UnAuthorizedException(string message, IDictionary<string, string[]> data) : base(message, data, HttpStatusCode.Unauthorized) { }
-    }
+    public class UnAuthorizedException(string message, IDictionary<string, string[]> data) : GlobalBaseException(message, data, HttpStatusCode.Unauthorized);
 }

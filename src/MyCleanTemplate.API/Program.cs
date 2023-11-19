@@ -1,9 +1,9 @@
-using MyCleanTemplate.API;
 using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
-using MyCleanTemplate.Common.Logs;
+using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
 using Serilog;
+using ServiceGenerator;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog(
@@ -38,4 +38,7 @@ app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
 app.UseMiddleware<LogRequestResponseMiddleware>();
 await app.RunAsync();
 
-public partial class Program { }
+namespace MyCleanTemplate.API
+{
+    public partial class Program { }
+}

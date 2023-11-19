@@ -1,19 +1,14 @@
-﻿using MyCleanTemplate.Common.Dependencies;
-using MyCleanTemplate.Common.Logs;
-using Serilog.Context;
+﻿using Serilog.Context;
 using System.Text.Json;
+using MyCleanTemplate.Domain.Common.Logs;
+using ServiceGenerator;
 using ILogger = Serilog.ILogger;
-using LogLevel = MyCleanTemplate.Common.Logs.LogLevel;
+using LogLevel = MyCleanTemplate.Domain.Common.Logs.LogLevel;
 
 namespace MyCleanTemplate.API.Middleware
 {
-    public class LogRequestResponseMiddleware : IMiddleware, ITransientJustImplementationDependency
+    public class LogRequestResponseMiddleware(ILogger logger) : IMiddleware, ITransientJustImplementationDependency
     {
-        private readonly ILogger _logger;
-        public LogRequestResponseMiddleware(ILogger logger)
-        {
-            _logger = logger;
-        }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             using var stream = new MemoryStream();
@@ -32,7 +27,7 @@ namespace MyCleanTemplate.API.Middleware
             using (LogContext.PushProperty("API.ActionName", context.GetEndpoint()?.DisplayName))
             using (LogContext.PushProperty("API.Path", context.Request.Path))
             {
-                _logger.Information($"API.Request -> {context.GetEndpoint()?.DisplayName ?? ""}");
+                logger.Information($"API.Request -> {context.GetEndpoint()?.DisplayName ?? ""}");
             }
 
             await next(context);
@@ -51,7 +46,7 @@ namespace MyCleanTemplate.API.Middleware
             using (LogContext.PushProperty("API.ActionName", context.GetEndpoint()?.DisplayName))
             using (LogContext.PushProperty("API.Path", context.Request.Path))
             {
-                _logger.Information($"API.Response -> {context.GetEndpoint()?.DisplayName ?? ""}");
+                logger.Information($"API.Response -> {context.GetEndpoint()?.DisplayName ?? ""}");
             }
 
         }

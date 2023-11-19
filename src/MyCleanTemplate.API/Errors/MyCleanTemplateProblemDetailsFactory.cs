@@ -3,20 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using MyCleanTemplate.Common.Dependencies;
 using MyCleanTemplate.Domain.Exceptions.Base;
 using System.Diagnostics;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.API.Errors
 {
-    internal class MyCleanTemplateProblemDetailsFactory : ProblemDetailsFactory, ISingletonDependency
+    internal class MyCleanTemplateProblemDetailsFactory(IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory,
+        ISingletonDependency
     {
-        private readonly ApiBehaviorOptions _options;
-
-        public MyCleanTemplateProblemDetailsFactory(IOptions<ApiBehaviorOptions> options)
-        {
-            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        }
+        private readonly ApiBehaviorOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
         public override ProblemDetails CreateProblemDetails(
             HttpContext httpContext,

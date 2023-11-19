@@ -1,20 +1,13 @@
 ﻿using Castle.DynamicProxy;
-using MyCleanTemplate.Common.Dependencies;
-using MyCleanTemplate.Common.Logs;
-using MyCleanTemplate.Domain.Abstractions;
-using Serilog;
 using Serilog.Context;
 using System.Text.Json;
-
+using MyCleanTemplate.Domain.Common.Logs;
+using ServiceGenerator;
+using ILogger = Serilog.ILogger;
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {
-    internal class LogRepositoryInterceptor : ILogRepositoryInterceptor, IScopeDependency
+    internal class LogRepositoryInterceptor(ILogger logger) : ILogRepositoryInterceptor, IScopeDependency
     {
-        private readonly ILogger _logger;
-        public LogRepositoryInterceptor(ILogger logger)
-        {
-            _logger = logger;
-        }
         public void Intercept(IInvocation invocation)
         {
             var name = invocation.Method.DeclaringType!.Namespace + "." + invocation.Method.DeclaringType!.Name + "." + invocation.Method.Name;
@@ -45,7 +38,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
             using (LogContext.PushProperty("Repository.MethodName", name))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.Repo))
             {
-                _logger.Information("Repository Response");
+                logger.Information("Repository Response");
             }
         }
     }

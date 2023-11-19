@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Application.Contract.Abstractions;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.Application
 {

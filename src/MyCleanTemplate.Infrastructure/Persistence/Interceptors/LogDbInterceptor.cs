@@ -1,19 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
-using MyCleanTemplate.Common.Logs;
 using Serilog;
 using Serilog.Context;
 using System.Data.Common;
 using System.Text.Json;
+using MyCleanTemplate.Domain.Common.Logs;
 
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {
-    internal class LogDbInterceptor : DbCommandInterceptor
+    internal class LogDbInterceptor(ILogger logger) : DbCommandInterceptor
     {
-        private readonly ILogger _logger;
-        public LogDbInterceptor(ILogger logger)
-        {
-            _logger = logger;
-        }
         public override InterceptionResult<int> NonQueryExecuting(
            DbCommand command,
            CommandEventData eventData,
@@ -77,7 +72,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
             using (LogContext.PushProperty("Query.TextQuery", command.CommandText))
             using (LogContext.PushProperty("Query.Arguments", JsonSerializer.Serialize(parameters.Select(a => new { a.ParameterName, a.Value }))))
             {
-                _logger.Information(@"Query Run");
+                logger.Information(@"Query Run");
             }
         }
     }
