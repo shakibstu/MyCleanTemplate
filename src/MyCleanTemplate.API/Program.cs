@@ -2,6 +2,8 @@ using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
 using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 using ServiceGenerator;
 
@@ -20,6 +22,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectSGDependenciesAPI();
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(b =>
+    {
+        b
+            .AddSource(LogKeywords.TelemetryServiceName)
+            .ConfigureResource(resource =>
+                resource.AddService(
+                    serviceName: LogKeywords.TelemetryServiceName))
+            .AddAspNetCoreInstrumentation()
+            .AddConsoleExporter().AddZipkinExporter();
+    });
+
 var app = builder.Build();
 await app.Services.ConfigureInfrastructure();
 
@@ -31,11 +46,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler("/api/error");
+app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
+app.UseMiddleware<LogRequestResponseMiddleware>();
 app.UseRouting().UseEndpoints(endpoints => { endpoints.MapControllers(); });
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.UseMiddleware<AddRequestIdToLogContextMiddleware>();
-app.UseMiddleware<LogRequestResponseMiddleware>();
 await app.RunAsync();
 
 namespace MyCleanTemplate.API

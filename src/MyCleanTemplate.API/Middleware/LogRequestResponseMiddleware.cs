@@ -1,4 +1,5 @@
 ﻿using MyCleanTemplate.Domain.Common.Logs;
+using OpenTelemetry.Trace;
 using Serilog.Context;
 using ServiceGenerator;
 using System.Text.Json;
@@ -11,14 +12,27 @@ namespace MyCleanTemplate.API.Middleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
+            var traceProvider = context.RequestServices.GetService<TracerProvider>();
+            using var span = traceProvider.GetTracer(LogKeywords.TelemetrySpanLevelApi)
+                .StartActiveSpan(LogKeywords.TelemetryServiceName);
+
+            using var activity =
+                TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApi);
+
             using var stream = new MemoryStream();
             var originalResponseBody = context.Response.Body;
             context.Response.Body = stream;
 
-
             context.Request.EnableBuffering();
             var bodyAsText = await new StreamReader(context.Request.Body).ReadToEndAsync();
             context.Request.Body.Position = 0;
+
+            activity?.SetTag("API.RequestBody", bodyAsText);
+            activity?.SetTag("API.QueryParams",
+                JsonSerializer.Serialize(context.Request.Query.Select(a => new { a.Key, a.Value })));
+            activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
+            activity?.SetTag("API.Path", context.Request.Path);
+
 
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.RequestInApi))
@@ -39,6 +53,10 @@ namespace MyCleanTemplate.API.Middleware
             await stream.CopyToAsync(originalResponseBody);
 
             context.Response.Body = originalResponseBody;
+
+            activity?.SetTag("API.ResponseBody", responseBody);
+            activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
+            activity?.SetTag("API.Path", context.Request.Path);
 
             using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
             using (LogContext.PushProperty(nameof(LogLevel), LogLevel.ResponseApi))

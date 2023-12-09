@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
+using OpenTelemetry.Trace;
 using Serilog;
 using ServiceGenerator;
 
@@ -16,7 +17,7 @@ namespace MyCleanTemplate.Infrastructure
         {
             services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
-                    .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>())));
+                    .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>(), serviceProvider.GetRequiredService<TracerProvider>())));
 
             services.AddSingleton(new ProxyGenerator());
 
@@ -36,7 +37,7 @@ namespace MyCleanTemplate.Infrastructure
             }
 
             var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
-            var dataSeeders = seeders as List<IDataSeeder> ?? seeders.ToList();
+            var dataSeeders = seeders as IReadOnlyList<IDataSeeder> ?? seeders.ToList();
             dataSeeders = dataSeeders.OrderByDescending(o => o.Order).ToList();
 
             foreach (var seeder in dataSeeders)

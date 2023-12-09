@@ -48,7 +48,7 @@ namespace MyCleanTemplate.SourceGenerator
                 model.GetDeclaredSymbol(classDeclaration);
             if (symbol == null) return;
 
-            var scopeDependencyFullName = "IScopeDependency.ServiceGenerator";
+            var scopeDependencyFullName = "ServiceGenerator.IScopeDependency";
 
             var singletonDependencyFullName = "ServiceGenerator.ISingletonDependency";
 
