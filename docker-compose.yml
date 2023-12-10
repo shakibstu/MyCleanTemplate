@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  mycleantemplate.api:
+    image: ${DOCKER_REGISTRY-}mycleantemplateapi
+    build:
+      context: .
+      dockerfile: src/MyCleanTemplate.API/Dockerfile
+  jeager:
+    image: jaegertracing/all-in-one:latest

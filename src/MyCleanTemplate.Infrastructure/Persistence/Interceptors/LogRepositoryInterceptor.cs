@@ -7,15 +7,13 @@ using OpenTelemetry.Trace;
 using ILogger = Serilog.ILogger;
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {
-    internal class LogRepositoryInterceptor(ILogger logger, TracerProvider tracerProvider) : ILogRepositoryInterceptor, IScopeDependency
+    internal class LogRepositoryInterceptor(ILogger logger) : ILogRepositoryInterceptor, IScopeDependency
     {
         public void Intercept(IInvocation invocation)
         {
             var name = invocation.Method.DeclaringType!.Namespace + "." + invocation.Method.DeclaringType!.Name + "." + invocation.Method.Name;
             var arguments = invocation.Arguments;
 
-            using var span = tracerProvider.GetTracer(LogKeywords.TelemetrySpanLevelDb)
-                .StartActiveSpan(LogKeywords.TelemetryServiceName);
             using var activity =
                 TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelDb);
             activity?.SetTag("Repository.Arguments", arguments);

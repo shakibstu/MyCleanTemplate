@@ -8,7 +8,7 @@ using ILogger = Serilog.ILogger;
 
 namespace MyCleanTemplate.Application.Common.Behaviors
 {
-    internal class LoggingBehavior<TRequest, TResponse>(ILogger logger, TracerProvider tracerProvider) : ITransientDependency,
+    internal class LoggingBehavior<TRequest, TResponse>(ILogger logger) : ITransientDependency,
         IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
@@ -16,9 +16,6 @@ namespace MyCleanTemplate.Application.Common.Behaviors
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             var requestType = LogHelper.GetFullName(request.GetType());
-
-            using var span = tracerProvider.GetTracer(LogKeywords.TelemetrySpanLevelApp)
-                .StartActiveSpan(LogKeywords.TelemetryServiceName);
 
             using var activity =
                 TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApp);

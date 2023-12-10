@@ -12,10 +12,6 @@ namespace MyCleanTemplate.API.Middleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var traceProvider = context.RequestServices.GetService<TracerProvider>();
-            using var span = traceProvider.GetTracer(LogKeywords.TelemetrySpanLevelApi)
-                .StartActiveSpan(LogKeywords.TelemetryServiceName);
-
             using var activity =
                 TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApi);
 

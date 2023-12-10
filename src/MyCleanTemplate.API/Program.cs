@@ -2,6 +2,7 @@ using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
 using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
@@ -26,13 +27,14 @@ builder.Services.AddInfrastructureServices(builder.Configuration).AddApplication
 builder.Services.AddOpenTelemetry()
     .WithTracing(b =>
     {
-        b
-            .AddSource(LogKeywords.TelemetryServiceName)
+        b.AddSource(LogKeywords.TelemetryServiceName)
             .ConfigureResource(resource =>
                 resource.AddService(
                     serviceName: LogKeywords.TelemetryServiceName))
             .AddAspNetCoreInstrumentation()
-            .AddConsoleExporter().AddZipkinExporter();
+            .AddConsoleExporter()
+            .AddZipkinExporter()
+            .AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!));
     });
 
 var app = builder.Build();
