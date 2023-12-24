@@ -24,18 +24,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectSGDependenciesAPI();
 
-builder.Services.AddOpenTelemetry()
-    .WithTracing(b =>
-    {
-        b.AddSource(LogKeywords.TelemetryServiceName)
-            .ConfigureResource(resource =>
-                resource.AddService(
-                    serviceName: LogKeywords.TelemetryServiceName))
-            .AddAspNetCoreInstrumentation()
-            .AddConsoleExporter()
-            .AddZipkinExporter()
-            .AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!));
-    });
+//builder.Services.AddOpenTelemetry()
+//    .WithTracing(b =>
+//    {
+//        b.AddSource(LogKeywords.TelemetryServiceName)
+//            .ConfigureResource(resource =>
+//                resource.AddService(
+//                    serviceName: LogKeywords.TelemetryServiceName))
+//            .AddAspNetCoreInstrumentation()
+//            .AddConsoleExporter()
+//            .AddZipkinExporter()
+//            .AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!));
+//    });
 
 var app = builder.Build();
 await app.Services.ConfigureInfrastructure();
