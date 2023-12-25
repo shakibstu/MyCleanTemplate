@@ -1,12 +1,14 @@
 ﻿using MyCleanTemplate.IntegrationTest.Automation;
 using System.Net.Http.Json;
+using MyCleanTemplate.Application.Contract.Test.Query;
 using Shouldly;
 using Xunit;
 
 namespace MyCleanTemplate.IntegrationTest
 {
 
-    public class TestTest : BaseIntegrationTest
+    public class TestTest(IntegrationTestWebApplicationFactory applicationFactory)
+        : BaseIntegrationTest(applicationFactory)
     {
         [Fact]
         public async Task TestGet()
@@ -15,9 +17,12 @@ namespace MyCleanTemplate.IntegrationTest
             var x = await response.Content.ReadAsStringAsync();
             x.ShouldNotBeEmpty();
         }
-
-        public TestTest(IntegrationTestWebApplicationFactory applicationFactory) : base(applicationFactory)
+        
+        [Fact]
+        public async Task TestGetApp()
         {
+            var response = await Sender.Send(new TestQuery());
+            response.ShouldNotBeNull();
         }
     }
 }
