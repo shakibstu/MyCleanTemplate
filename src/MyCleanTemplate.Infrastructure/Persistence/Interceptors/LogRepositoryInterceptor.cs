@@ -29,7 +29,7 @@ namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 
                     activity?.SetTag("Repository.Response", JsonSerializer.Serialize(valueResponse));
 
-                    LogRepo(name, arguments, invocation.ReturnValue);
+                    LogRepo(name, arguments, valueResponse);
                 }
             }
             catch (Exception ex)

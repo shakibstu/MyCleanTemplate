@@ -11,13 +11,14 @@ using MyCleanTemplate.Infrastructure.Persistence;
 namespace MyCleanTemplate.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221204194356_initTest")]
-    partial class initTest
+    [Migration("20231225184458_InitialCreate")]
+    partial class InitialCreate
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
             modelBuilder.Entity("MyCleanTemplate.Domain.Test.TestEntity", b =>
                 {
@@ -52,7 +53,7 @@ namespace MyCleanTemplate.Infrastructure.Migrations
 
             modelBuilder.Entity("MyCleanTemplate.Domain.Test.TestEntity", b =>
                 {
-                    b.OwnsOne("MyCleanTemplate.Domain.ValueObjects.TestValueObject", "TestValueObject", b1 =>
+                    b.OwnsOne("MyCleanTemplate.Domain.Test.TestValueObject", "TestValueObject", b1 =>
                         {
                             b1.Property<Guid>("TestEntityId")
                                 .HasColumnType("TEXT");
