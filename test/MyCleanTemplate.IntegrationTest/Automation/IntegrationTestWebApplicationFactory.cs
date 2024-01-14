@@ -41,7 +41,7 @@ namespace MyCleanTemplate.IntegrationTest.Automation
             //throw new NotImplementedException();
         }
 
-        public Task DisposeAsync()
+        public new Task DisposeAsync()
         {
             return Task.CompletedTask;
             //throw new NotImplementedException();
