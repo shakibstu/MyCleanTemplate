@@ -5,7 +5,8 @@ using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {
-    internal class TestSeeder(ITestRepository repository) : IDataSeeder, ITransientDependency
+    [TransientDependency<IDataSeeder>]
+    internal class TestSeeder(ITestRepository repository) : IDataSeeder
     {
         public int Order { get; init; } = 1;
 

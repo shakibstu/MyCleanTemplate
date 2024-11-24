@@ -1,0 +1,6 @@
+@SourceGTest_HostAddress = http://localhost:5257
+
+GET {{SourceGTest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

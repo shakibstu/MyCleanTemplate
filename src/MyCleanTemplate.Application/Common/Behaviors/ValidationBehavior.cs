@@ -6,8 +6,9 @@ using ValidationException = MyCleanTemplate.Application.Common.Exceptions.Valida
 
 namespace MyCleanTemplate.Application.Common.Behaviors;
 
+[TransientDependency(typeof(IPipelineBehavior<,>))]
 internal class ValidationBehavior<TRequest, TResponse>
-    (IEnumerable<IValidator<TRequest>> validators) : ITransientDependency, IPipelineBehavior<TRequest, TResponse>
+    (IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)

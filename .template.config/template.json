@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Shakib Loveimi",
+  "classifications": [ "Web", "API" ],
+  "identity": "MyCleanTemplate",
+  "name": "Shakib Loveimi Clean Template",
+  "sourceName": "MyCleanTemplate",
+  "shortName": "Shaklean",
+  "tags": {
+    "type": "solution",
+    "language": "C#"
+  },
+  "preferNameDirectory": true 
+}

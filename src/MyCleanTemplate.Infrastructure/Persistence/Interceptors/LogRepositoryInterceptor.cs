@@ -3,7 +3,6 @@ using MyCleanTemplate.Domain.Common.Logs;
 using Serilog.Context;
 using ServiceGenerator;
 using System.Text.Json;
-using OpenTelemetry.Trace;
 using ILogger = Serilog.ILogger;
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {

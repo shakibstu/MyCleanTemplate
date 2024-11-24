@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics;
-using OpenTelemetry.Trace;
+﻿using System.Diagnostics;
 
 namespace MyCleanTemplate.Domain.Common.Logs
 {

@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using MyCleanTemplate.Application.Common.Behaviors;
 using MyCleanTemplate.Application.Contract.Abstractions;
 using ServiceGenerator;
 
@@ -11,7 +13,8 @@ namespace MyCleanTemplate.Application
         {
             var assembly = typeof(ApplicationServiceRegistration).Assembly;
             services.AddMediatR(a => a.RegisterServicesFromAssembly(assembly));
-            services.InjectSGDependenciesApplication();
+            //services.InjectSGDependenciesApplication();
+            services.InjectFromSourceGenerator();
             services.AddValidatorsFromAssemblyContaining<IApplicationContractAssemblyMarker>();
             return services;
         }

@@ -2,7 +2,6 @@ using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
 using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
@@ -22,7 +21,7 @@ builder.Host.UseSerilog(
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectSGDependenciesAPI();
+builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectFromSourceGenerator();
 
 builder.Services.AddOpenTelemetry()
     .WithTracing(b =>

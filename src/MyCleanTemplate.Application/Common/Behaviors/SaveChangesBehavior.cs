@@ -6,7 +6,8 @@ using ServiceGenerator;
 
 namespace MyCleanTemplate.Application.Common.Behaviors
 {
-    internal class SaveChangesBehaviorWithResponse<TRequest, TResponse>(IUnitOfWork unitOfWork) : ITransientDependency,
+    [TransientDependency(typeof(IPipelineBehavior<,>))]
+    internal class SaveChangesBehaviorWithResponse<TRequest, TResponse>(IUnitOfWork unitOfWork) : 
         IPipelineBehavior<TRequest, TResponse>
         where TRequest : ICommand<TResponse>
     {
@@ -15,8 +16,10 @@ namespace MyCleanTemplate.Application.Common.Behaviors
             return unitOfWork.SaveChangesTransactional(next, cancellationToken);
         }
     }
+    [TransientDependency(typeof(IPipelineBehavior<,>))]
     internal class SaveChangesBehaviorWithoutResponse<TRequest, TResponse>
-        (IUnitOfWork unitOfWork) : ITransientDependency, IPipelineBehavior<TRequest, TResponse>
+        (IUnitOfWork unitOfWork) :
+        IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>, ICommand
     {
         public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)

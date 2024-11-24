@@ -11,6 +11,9 @@
     "Infra-SG": {
       "commandName": "DebugRoslynComponent",
       "targetProject": "..\\MyCleanTemplate.Infrastructure\\MyCleanTemplate.Infrastructure.csproj"
+    },
+    "Profile 1": {
+      "commandName": "Executable"
     }
   }
 }

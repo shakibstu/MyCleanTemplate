@@ -1,14 +1,14 @@
 ﻿using MediatR;
 using MyCleanTemplate.Domain.Common.Logs;
-using OpenTelemetry.Trace;
 using Serilog.Context;
-using ServiceGenerator;
 using System.Text.Json;
+using ServiceGenerator;
 using ILogger = Serilog.ILogger;
 
 namespace MyCleanTemplate.Application.Common.Behaviors
 {
-    internal class LoggingBehavior<TRequest, TResponse>(ILogger logger) : ITransientDependency,
+    [TransientDependency(typeof(IPipelineBehavior<,>))]
+    internal class LoggingBehavior<TRequest, TResponse>(ILogger logger) : 
         IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {

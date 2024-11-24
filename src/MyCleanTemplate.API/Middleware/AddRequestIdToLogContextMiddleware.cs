@@ -4,7 +4,8 @@ using ServiceGenerator;
 
 namespace MyCleanTemplate.API.Middleware
 {
-    internal class AddRequestIdToLogContextMiddleware : IMiddleware, ITransientJustImplementationDependency
+    [TransientDependency<AddRequestIdToLogContextMiddleware>]
+    internal class AddRequestIdToLogContextMiddleware : IMiddleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

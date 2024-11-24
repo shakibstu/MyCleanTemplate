@@ -5,7 +5,8 @@ using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Common
 {
-    internal class UnitOfWork(ApplicationDbContext context) : IUnitOfWork, IScopeDependency
+    [ScopedDependency<IUnitOfWork>]
+    internal class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
     {
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

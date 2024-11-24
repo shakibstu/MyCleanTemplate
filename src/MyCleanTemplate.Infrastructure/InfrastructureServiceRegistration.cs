@@ -19,9 +19,8 @@ namespace MyCleanTemplate.Infrastructure
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
                     .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>(), serviceProvider.GetRequiredService<TracerProvider>())));
 
-            services.AddSingleton(new ProxyGenerator());
+            services.AddSingleton(new ProxyGenerator()).InjectFromSourceGenerator();
 
-            services.InjectSGDependenciesInfrastructure();
             return services;
         }
 

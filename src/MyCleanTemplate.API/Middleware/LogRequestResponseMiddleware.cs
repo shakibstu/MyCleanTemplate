@@ -1,5 +1,4 @@
 ﻿using MyCleanTemplate.Domain.Common.Logs;
-using OpenTelemetry.Trace;
 using Serilog.Context;
 using ServiceGenerator;
 using System.Text.Json;

@@ -9,8 +9,8 @@ using System.Diagnostics;
 
 namespace MyCleanTemplate.API.Errors
 {
-    internal class MyCleanTemplateProblemDetailsFactory(IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory,
-        ISingletonDependency
+    [SingletonDependency<ProblemDetailsFactory>]
+    internal class MyCleanTemplateProblemDetailsFactory(IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
     {
         private readonly ApiBehaviorOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
