@@ -12,12 +12,6 @@ namespace MyCleanTemplate.SourceGenerator
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-//#if DEBUG
-//            if (!Debugger.IsAttached)
-//            {
-//                Debugger.Launch();
-//            }
-//#endif
             const string basicDeclarations = """
                                              
                                              namespace ServiceGenerator;

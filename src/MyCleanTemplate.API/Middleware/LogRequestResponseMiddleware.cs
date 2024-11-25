@@ -7,7 +7,8 @@ using LogLevel = MyCleanTemplate.Domain.Common.Logs.LogLevel;
 
 namespace MyCleanTemplate.API.Middleware
 {
-    public class LogRequestResponseMiddleware(ILogger logger) : IMiddleware, ITransientJustImplementationDependency
+    [TransientDependency<LogRequestResponseMiddleware>]
+    public class LogRequestResponseMiddleware(ILogger logger) : IMiddleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

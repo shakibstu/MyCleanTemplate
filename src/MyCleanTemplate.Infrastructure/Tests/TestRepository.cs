@@ -6,7 +6,6 @@ using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Tests
 {
-    [Repository]
     internal class TestRepository(ApplicationDbContext context) : BaseRepository<TestEntity>(context), ITestRepository
     {
         private readonly DbSet<TestEntity> _entities = context.Tests;

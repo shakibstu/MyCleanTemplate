@@ -13,7 +13,6 @@ namespace MyCleanTemplate.Application
         {
             var assembly = typeof(ApplicationServiceRegistration).Assembly;
             services.AddMediatR(a => a.RegisterServicesFromAssembly(assembly));
-            //services.InjectSGDependenciesApplication();
             services.InjectFromSourceGenerator();
             services.AddValidatorsFromAssemblyContaining<IApplicationContractAssemblyMarker>();
             return services;

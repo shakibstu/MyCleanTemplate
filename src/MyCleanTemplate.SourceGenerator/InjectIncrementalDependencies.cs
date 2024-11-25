@@ -1,8 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -59,7 +55,7 @@ namespace MyCleanTemplate.SourceGenerator
 
                     builder.AppendLine();
                     builder.Append(
-                        $"services.Add{level}(typeof({GetType(info.symbol)}),typeof({GetGenericOfAttribute(info.attribute)}));");
+                        $"services.Add{level}(typeof({GetGenericOfAttribute(info.attribute)}),typeof({GetType(info.symbol)}));");
                 }
 
                 var injected = string.Format(template.ToString(), builder);
@@ -116,7 +112,7 @@ namespace MyCleanTemplate.SourceGenerator
 
                     builder.AppendLine();
                     builder.Append(
-                        $"services.Add{level}(typeof({GetType(info.symbol)}),typeof({GetTypeOfParametricAttribute(info.attribute)}));");
+                        $"services.Add{level}(typeof({GetTypeOfParametricAttribute(info.attribute)}),typeof({GetType(info.symbol)}));");
                 }
 
                 var injected = string.Format(template.ToString(), builder);

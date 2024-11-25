@@ -6,7 +6,7 @@ using System.Text.Json;
 using ILogger = Serilog.ILogger;
 namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
 {
-    internal class LogRepositoryInterceptor(ILogger logger) : ILogRepositoryInterceptor, IScopeDependency
+    internal class LogRepositoryInterceptor(ILogger logger) : IInterceptor
     {
         public void Intercept(IInvocation invocation)
         {

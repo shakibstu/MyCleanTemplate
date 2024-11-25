@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions;
+using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
+using MyCleanTemplate.Infrastructure.Tests;
 using OpenTelemetry.Trace;
 using Serilog;
 using ServiceGenerator;
@@ -20,10 +22,19 @@ namespace MyCleanTemplate.Infrastructure
                     .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>(), serviceProvider.GetRequiredService<TracerProvider>())));
 
             services.AddSingleton(new ProxyGenerator()).InjectFromSourceGenerator();
-
+            services.AddRepository<ITestRepository, TestRepository>();
             return services;
         }
 
+        private static IServiceCollection AddRepository<T, TE>(this IServiceCollection services) where TE : class, T
+            =>
+                services.AddScoped(typeof(T), serviceProvider =>
+                {
+                    var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
+                    var actual = ActivatorUtilities.CreateInstance<TE>(serviceProvider);
+                    var interceptor = ActivatorUtilities.CreateInstance<LogRepositoryInterceptor>(serviceProvider);
+                    return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), actual, interceptor);
+                });
         public static async Task ConfigureInfrastructure(this IServiceProvider serviceProvider)
         {
             var scope = serviceProvider.CreateAsyncScope();
