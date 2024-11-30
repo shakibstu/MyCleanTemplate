@@ -1,16 +1,15 @@
-﻿namespace MyCleanTemplate.Domain.Common.Logs
+﻿namespace MyCleanTemplate.Domain.Common.Logs;
+
+public enum LogLevel
 {
-    public enum LogLevel
-    {
-        RequestInApp = 1,
-        RequestInApi,
-        ResponseApp,
-        ResponseApi,
-        DbQuery,
-        Repo,
-        //TODO: Use These Levels
-        Info,
-        Warn,
-        Err,
-    }
+    RequestInApp = 1,
+    RequestInApi,
+    ResponseApp,
+    ResponseApi,
+    DbQuery,
+    Repo,
+    //TODO: Use These Levels
+    Info,
+    Warn,
+    Err,
 }

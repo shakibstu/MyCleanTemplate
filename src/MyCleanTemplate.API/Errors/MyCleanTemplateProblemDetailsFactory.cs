@@ -7,98 +7,97 @@ using MyCleanTemplate.Domain.Exceptions.Base;
 using ServiceGenerator;
 using System.Diagnostics;
 
-namespace MyCleanTemplate.API.Errors
+namespace MyCleanTemplate.API.Errors;
+
+[SingletonDependency<ProblemDetailsFactory>]
+internal class MyCleanTemplateProblemDetailsFactory(IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
 {
-    [SingletonDependency<ProblemDetailsFactory>]
-    internal class MyCleanTemplateProblemDetailsFactory(IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
+    private readonly ApiBehaviorOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+
+    public override ProblemDetails CreateProblemDetails(
+        HttpContext httpContext,
+        int? statusCode = null,
+        string title = null,
+        string type = null,
+        string detail = null,
+        string instance = null)
     {
-        private readonly ApiBehaviorOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        statusCode ??= 500;
 
-        public override ProblemDetails CreateProblemDetails(
-            HttpContext httpContext,
-            int? statusCode = null,
-            string title = null,
-            string type = null,
-            string detail = null,
-            string instance = null)
+        var problemDetails = new ProblemDetails
         {
-            statusCode ??= 500;
+            Status = statusCode,
+            Title = title,
+            Type = type,
+            Detail = detail,
+            Instance = instance,
+        };
 
-            var problemDetails = new ProblemDetails
-            {
-                Status = statusCode,
-                Title = title,
-                Type = type,
-                Detail = detail,
-                Instance = instance,
-            };
+        ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
 
-            ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
+        return problemDetails;
+    }
 
-            return problemDetails;
+    public override ValidationProblemDetails CreateValidationProblemDetails(
+        HttpContext httpContext,
+        ModelStateDictionary modelStateDictionary,
+        int? statusCode = null,
+        string title = null,
+        string type = null,
+        string detail = null,
+        string instance = null)
+    {
+        if (modelStateDictionary == null)
+        {
+            throw new ArgumentNullException(nameof(modelStateDictionary));
         }
 
-        public override ValidationProblemDetails CreateValidationProblemDetails(
-            HttpContext httpContext,
-            ModelStateDictionary modelStateDictionary,
-            int? statusCode = null,
-            string title = null,
-            string type = null,
-            string detail = null,
-            string instance = null)
+        statusCode ??= 400;
+
+        var problemDetails = new ValidationProblemDetails(modelStateDictionary)
         {
-            if (modelStateDictionary == null)
-            {
-                throw new ArgumentNullException(nameof(modelStateDictionary));
-            }
+            Status = statusCode,
+            Type = type,
+            Detail = detail,
+            Instance = instance,
+        };
 
-            statusCode ??= 400;
-
-            var problemDetails = new ValidationProblemDetails(modelStateDictionary)
-            {
-                Status = statusCode,
-                Type = type,
-                Detail = detail,
-                Instance = instance,
-            };
-
-            if (title != null)
-            {
-                // For validation problem details, don't overwrite the default title with null.
-                problemDetails.Title = title;
-            }
-
-            ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
-
-            return problemDetails;
+        if (title != null)
+        {
+            // For validation problem details, don't overwrite the default title with null.
+            problemDetails.Title = title;
         }
 
-        private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails, int statusCode)
+        ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
+
+        return problemDetails;
+    }
+
+    private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails, int statusCode)
+    {
+        var finalStatusCode = statusCode;
+
+        var exception = httpContext?.Features.Get<IExceptionHandlerPathFeature>()?.Error;
+        if (exception is GlobalBaseException baseException)
         {
-            var finalStatusCode = statusCode;
-
-            var exception = httpContext?.Features.Get<IExceptionHandlerPathFeature>()?.Error;
-            if (exception is GlobalBaseException baseException)
-            {
-                problemDetails.Title = baseException.Message;
-                finalStatusCode = (int)baseException.StatusCode;
-                problemDetails.Extensions["errors"] = baseException.Errors;
-            }
-
-            problemDetails.Status = finalStatusCode;
-
-            if (_options.ClientErrorMapping.TryGetValue(finalStatusCode, out var clientErrorData))
-            {
-                problemDetails.Title ??= clientErrorData.Title;
-                problemDetails.Type ??= clientErrorData.Link;
-            }
-
-            var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
-            if (traceId != null)
-            {
-                problemDetails.Extensions["traceId"] = traceId;
-            }
-
+            problemDetails.Title = baseException.Message;
+            finalStatusCode = (int)baseException.StatusCode;
+            problemDetails.Extensions["errors"] = baseException.Errors;
         }
+
+        problemDetails.Status = finalStatusCode;
+
+        if (_options.ClientErrorMapping.TryGetValue(finalStatusCode, out var clientErrorData))
+        {
+            problemDetails.Title ??= clientErrorData.Title;
+            problemDetails.Type ??= clientErrorData.Link;
+        }
+
+        var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
+        if (traceId != null)
+        {
+            problemDetails.Extensions["traceId"] = traceId;
+        }
+
     }
 }

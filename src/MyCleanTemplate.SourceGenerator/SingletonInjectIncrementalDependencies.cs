@@ -1,13 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace MyCleanTemplate.SourceGenerator
+namespace MyCleanTemplate.SourceGenerator;
+
+[Generator]
+public class SingletonInjectIncrementalDependencies : IIncrementalGenerator
 {
-    [Generator]
-    public class SingletonInjectIncrementalDependencies : IIncrementalGenerator
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        public void Initialize(IncrementalGeneratorInitializationContext context)
-        {
-            InjectIncrementalDependencies.InitializeWithLevel(context, "Singleton");
-        }
+        InjectIncrementalDependencies.InitializeWithLevel(context, "Singleton");
     }
 }

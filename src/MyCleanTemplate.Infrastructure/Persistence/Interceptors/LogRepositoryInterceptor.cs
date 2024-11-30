@@ -1,55 +1,53 @@
 ﻿using Castle.DynamicProxy;
 using MyCleanTemplate.Domain.Common.Logs;
 using Serilog.Context;
-using ServiceGenerator;
 using System.Text.Json;
 using ILogger = Serilog.ILogger;
-namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors
+namespace MyCleanTemplate.Infrastructure.Persistence.Interceptors;
+
+internal class LogRepositoryInterceptor(ILogger logger) : IInterceptor
 {
-    internal class LogRepositoryInterceptor(ILogger logger) : IInterceptor
+    public void Intercept(IInvocation invocation)
     {
-        public void Intercept(IInvocation invocation)
+        var name = invocation.Method.DeclaringType!.Namespace + "." + invocation.Method.DeclaringType!.Name + "." + invocation.Method.Name;
+        var arguments = invocation.Arguments;
+
+        using var activity =
+            TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelDb);
+        activity?.SetTag("Repository.Arguments", arguments);
+        activity?.SetTag("Repository.MethodName", invocation);
+        try
         {
-            var name = invocation.Method.DeclaringType!.Namespace + "." + invocation.Method.DeclaringType!.Name + "." + invocation.Method.Name;
-            var arguments = invocation.Arguments;
-
-            using var activity =
-                TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelDb);
-            activity?.SetTag("Repository.Arguments", arguments);
-            activity?.SetTag("Repository.MethodName", invocation);
-            try
+            using (LogContext.PushProperty("Repository.RId", Guid.NewGuid()))
             {
-                using (LogContext.PushProperty("Repository.RId", Guid.NewGuid()))
-                {
-                    invocation.Proceed();
+                invocation.Proceed();
 
-                    var valueResponse = invocation.ReturnValue.GetType().GetProperties().First(a => a.Name == "Result")
-                        .GetValue(invocation.ReturnValue, null);
+                var valueResponse = invocation.ReturnValue.GetType().GetProperties().First(a => a.Name == "Result")
+                    .GetValue(invocation.ReturnValue, null);
 
-                    activity?.SetTag("Repository.Response", JsonSerializer.Serialize(valueResponse));
+                activity?.SetTag("Repository.Response", JsonSerializer.Serialize(valueResponse));
 
-                    LogRepo(name, arguments, valueResponse);
-                }
+                LogRepo(name, arguments, valueResponse);
             }
-            catch (Exception ex)
-            {
-                LogRepo(name, arguments, ex);
-                throw;
-            }
-
+        }
+        catch (Exception ex)
+        {
+            LogRepo(name, arguments, ex);
+            throw;
         }
 
-        private void LogRepo(string name, object[] arguments, object valueResponse)
-        {
+    }
+
+    private void LogRepo(string name, object[] arguments, object valueResponse)
+    {
             
-            using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
-            using (LogContext.PushProperty("Repository.Arguments", arguments))
-            using (LogContext.PushProperty("Repository.Response", JsonSerializer.Serialize(valueResponse)))
-            using (LogContext.PushProperty("Repository.MethodName", name))
-            using (LogContext.PushProperty(nameof(LogLevel), LogLevel.Repo))
-            {
-                logger.Information("Repository Response");
-            }
+        using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
+        using (LogContext.PushProperty("Repository.Arguments", arguments))
+        using (LogContext.PushProperty("Repository.Response", JsonSerializer.Serialize(valueResponse)))
+        using (LogContext.PushProperty("Repository.MethodName", name))
+        using (LogContext.PushProperty(nameof(LogLevel), LogLevel.Repo))
+        {
+            logger.Information("Repository Response");
         }
     }
 }

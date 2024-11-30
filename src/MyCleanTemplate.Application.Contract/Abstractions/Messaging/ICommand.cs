@@ -1,11 +1,10 @@
 ﻿using MediatR;
 
-namespace MyCleanTemplate.Application.Contract.Abstractions.Messaging
+namespace MyCleanTemplate.Application.Contract.Abstractions.Messaging;
+
+public interface ICommand : IRequest
 {
-    public interface ICommand : IRequest
-    {
-    }
-    public interface ICommand<out TResponse> : IRequest<TResponse>
-    {
-    }
+}
+public interface ICommand<out TResponse> : IRequest<TResponse>
+{
 }

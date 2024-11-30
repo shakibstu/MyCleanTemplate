@@ -1,9 +1,8 @@
 ﻿using MyCleanTemplate.Domain.Abstractions;
 
-namespace MyCleanTemplate.Domain.Test
+namespace MyCleanTemplate.Domain.Test;
+
+public interface ITestRepository : IBaseRepository<TestEntity>
 {
-    public interface ITestRepository : IBaseRepository<TestEntity>
-    {
-        Task<List<TestEntity>> GetAllAfterDate(DateTime date);
-    }
+    Task<List<TestEntity>> GetAllAfterDate(DateTime date);
 }

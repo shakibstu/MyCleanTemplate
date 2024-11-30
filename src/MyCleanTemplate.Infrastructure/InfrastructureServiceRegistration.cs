@@ -11,50 +11,49 @@ using OpenTelemetry.Trace;
 using Serilog;
 using ServiceGenerator;
 
-namespace MyCleanTemplate.Infrastructure
+namespace MyCleanTemplate.Infrastructure;
+
+public static class InfrastructureServiceRegistration
 {
-    public static class InfrastructureServiceRegistration
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
-                    .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>(), serviceProvider.GetRequiredService<TracerProvider>())));
+        services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+            options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
+                .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>(), serviceProvider.GetRequiredService<TracerProvider>())));
 
-            services.AddSingleton(new ProxyGenerator()).InjectFromSourceGenerator();
-            services.AddRepository<ITestRepository, TestRepository>();
-            return services;
+        services.AddSingleton(new ProxyGenerator()).InjectFromSourceGenerator();
+        services.AddRepository<ITestRepository, TestRepository>();
+        return services;
+    }
+
+    private static IServiceCollection AddRepository<T, TE>(this IServiceCollection services) where TE : class, T
+        =>
+            services.AddScoped(typeof(T), serviceProvider =>
+            {
+                var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
+                var actual = ActivatorUtilities.CreateInstance<TE>(serviceProvider);
+                var interceptor = ActivatorUtilities.CreateInstance<LogRepositoryInterceptor>(serviceProvider);
+                return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), actual, interceptor);
+            });
+    public static async Task ConfigureInfrastructure(this IServiceProvider serviceProvider)
+    {
+        var scope = serviceProvider.CreateAsyncScope();
+
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        if ((await db.Database.GetPendingMigrationsAsync()).Any())
+        {
+            await db.Database.MigrateAsync();
         }
 
-        private static IServiceCollection AddRepository<T, TE>(this IServiceCollection services) where TE : class, T
-            =>
-                services.AddScoped(typeof(T), serviceProvider =>
-                {
-                    var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
-                    var actual = ActivatorUtilities.CreateInstance<TE>(serviceProvider);
-                    var interceptor = ActivatorUtilities.CreateInstance<LogRepositoryInterceptor>(serviceProvider);
-                    return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), actual, interceptor);
-                });
-        public static async Task ConfigureInfrastructure(this IServiceProvider serviceProvider)
+        var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
+        var dataSeeders = seeders as IReadOnlyList<IDataSeeder> ?? seeders.ToList();
+        dataSeeders = dataSeeders.OrderByDescending(o => o.Order).ToList();
+
+        foreach (var seeder in dataSeeders)
         {
-            var scope = serviceProvider.CreateAsyncScope();
-
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            if ((await db.Database.GetPendingMigrationsAsync()).Any())
-            {
-                await db.Database.MigrateAsync();
-            }
-
-            var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
-            var dataSeeders = seeders as IReadOnlyList<IDataSeeder> ?? seeders.ToList();
-            dataSeeders = dataSeeders.OrderByDescending(o => o.Order).ToList();
-
-            foreach (var seeder in dataSeeders)
-            {
-                await seeder.SeedAsync();
-            }
-            await db.SaveChangesAsync();
+            await seeder.SeedAsync();
         }
+        await db.SaveChangesAsync();
     }
 }

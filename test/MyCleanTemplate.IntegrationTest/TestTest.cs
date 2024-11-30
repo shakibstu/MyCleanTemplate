@@ -4,25 +4,23 @@ using MyCleanTemplate.Application.Contract.Test.Query;
 using Shouldly;
 using Xunit;
 
-namespace MyCleanTemplate.IntegrationTest
-{
+namespace MyCleanTemplate.IntegrationTest;
 
-    public class TestTest(IntegrationTestWebApplicationFactory applicationFactory)
-        : BaseIntegrationTest(applicationFactory)
+public class TestTest(IntegrationTestWebApplicationFactory applicationFactory)
+    : BaseIntegrationTest(applicationFactory)
+{
+    [Fact]
+    public async Task TestGet()
     {
-        [Fact]
-        public async Task TestGet()
-        {
-            var response = await HttpClient.PostAsJsonAsync("/api/test/GetTest", new object());
-            var x = await response.Content.ReadAsStringAsync();
-            x.ShouldNotBeEmpty();
-        }
+        var response = await HttpClient.PostAsJsonAsync("/api/test/GetTest", new object());
+        var x = await response.Content.ReadAsStringAsync();
+        x.ShouldNotBeEmpty();
+    }
         
-        [Fact]
-        public async Task TestGetApp()
-        {
-            var response = await Sender.Send(new TestQuery());
-            response.ShouldNotBeNull();
-        }
+    [Fact]
+    public async Task TestGetApp()
+    {
+        var response = await Sender.Send(new TestQuery());
+        response.ShouldNotBeNull();
     }
 }

@@ -1,9 +1,8 @@
-﻿namespace MyCleanTemplate.Domain.Enums
+﻿namespace MyCleanTemplate.Domain.Enums;
+
+public enum TestEnum
 {
-    public enum TestEnum
-    {
-        Test0 = 0,
-        Test1,
-        Test2
-    }
+    Test0 = 0,
+    Test1,
+    Test2
 }

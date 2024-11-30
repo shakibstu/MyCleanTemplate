@@ -8,43 +8,42 @@ using MyCleanTemplate.API;
 using MyCleanTemplate.Infrastructure.Persistence;
 using Xunit;
 
-namespace MyCleanTemplate.IntegrationTest.Automation
+namespace MyCleanTemplate.IntegrationTest.Automation;
+
+public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            var connection = new SqliteConnection("Data Source=:memory:");
-            connection.Open();
+        var connection = new SqliteConnection("Data Source=:memory:");
+        connection.Open();
 
-            builder.ConfigureServices(services =>
-            {
-                services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlite(connection));
-            });
-        }
-
-        protected override void Dispose(bool disposing)
+        builder.ConfigureServices(services =>
         {
-            base.Dispose(disposing);
-        }
+            services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(connection));
+        });
+    }
 
-        ~IntegrationTestWebApplicationFactory()
-        {
-            Dispose(false);
-        }
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+    }
 
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-            //throw new NotImplementedException();
-        }
+    ~IntegrationTestWebApplicationFactory()
+    {
+        Dispose(false);
+    }
 
-        public new Task DisposeAsync()
-        {
-            return Task.CompletedTask;
-            //throw new NotImplementedException();
-        }
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+        //throw new NotImplementedException();
+    }
+
+    public new Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+        //throw new NotImplementedException();
     }
 }

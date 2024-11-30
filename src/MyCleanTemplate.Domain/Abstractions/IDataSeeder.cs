@@ -1,8 +1,7 @@
-﻿namespace MyCleanTemplate.Domain.Abstractions
+﻿namespace MyCleanTemplate.Domain.Abstractions;
+
+public interface IDataSeeder
 {
-    public interface IDataSeeder
-    {
-        int Order { get; init; }
-        Task SeedAsync();
-    }
+    int Order { get; init; }
+    Task SeedAsync();
 }
