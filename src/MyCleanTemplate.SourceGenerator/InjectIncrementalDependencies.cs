@@ -111,8 +111,14 @@ public static class InjectIncrementalDependencies
             {
 
                 builder.AppendLine();
-                builder.Append(
-                    $"services.Add{level}(typeof({GetTypeOfParametricAttribute(info.attribute)}),typeof({GetType(info.symbol)}));");
+                var injections = GetTypeOfParametricAttribute(info.attribute);
+                foreach (var injection in injections)
+                {
+
+                    builder.Append(
+                        $"services.Add{level}(typeof({injection}),typeof({GetType(info.symbol)}));");
+                    builder.AppendLine();
+                }
             }
 
             var injected = string.Format(template.ToString(), builder);
@@ -122,6 +128,13 @@ public static class InjectIncrementalDependencies
     }
     private static string GetGenericOfAttribute(AttributeData attribute) =>
         attribute.AttributeClass!.TypeArguments[0].OriginalDefinition.ToString();
-    private static string GetTypeOfParametricAttribute(AttributeData attribute) =>
-        attribute.ConstructorArguments[0].Value!.ToString();
+
+    private static IEnumerable<string> GetTypeOfParametricAttribute(AttributeData attribute)
+    {
+        if( attribute.ConstructorArguments[0].Values is IEnumerable<TypedConstant> types)
+        {
+            return types.Select(t => t.Value!.ToString());
+        }
+        return [];
+    }
 }
