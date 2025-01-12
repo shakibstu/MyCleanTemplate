@@ -33,21 +33,21 @@ public class InjectBasics : IIncrementalGenerator
                                          [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
                                          internal class SingletonDependencyAttribute : Attribute
                                          {
-                                             public SingletonDependencyAttribute(Type t)
+                                             public SingletonDependencyAttribute(params Type[] t)
                                              {
                                              }
                                          }
                                          [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
                                          internal class ScopedDependencyAttribute : Attribute
                                          {
-                                             public ScopedDependencyAttribute(Type t)
+                                             public ScopedDependencyAttribute(params Type[] t)
                                              {
                                              }
                                          }
                                          [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
                                          internal class TransientDependencyAttribute : Attribute
                                          {
-                                             public TransientDependencyAttribute(Type t)
+                                             public TransientDependencyAttribute(params Type[] t)
                                              {
                                              }
                                          }
