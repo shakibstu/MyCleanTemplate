@@ -4,7 +4,7 @@ namespace SourceGTest.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class WeatherForecastController : BaseClassTest
 {
     private static readonly string[] Summaries = new[]
     {

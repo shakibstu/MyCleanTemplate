@@ -2,7 +2,6 @@ using ServiceGenerator;
 
 namespace SourceGTest;
 
-[ScopedDependency(typeof(int), typeof(string))]
 public class WeatherForecast
 {
     public DateOnly Date { get; set; }

@@ -51,11 +51,48 @@ public class InjectBasics : IIncrementalGenerator
                                              {
                                              }
                                          }
-
+                                         
+                                         //###########################
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                         internal class InheritableScopedDependencyAttribute<T> : Attribute
+                                         {
+                                         }
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                         internal class InheritableSingletonDependencyAttribute<T> : Attribute
+                                         {
+                                         }
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                         internal class InheritableTransientDependencyAttribute<T> : Attribute
+                                         {
+                                         }
+                                         
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                         internal class InheritableSingletonDependencyAttribute : Attribute
+                                         {
+                                             public InheritableSingletonDependencyAttribute(params Type[] t)
+                                             {
+                                             }
+                                         }
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                         internal class InheritableScopedDependencyAttribute : Attribute
+                                         {
+                                             public InheritableScopedDependencyAttribute(params Type[] t)
+                                             {
+                                             }
+                                         }
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                         internal class InheritableTransientDependencyAttribute : Attribute
+                                         {
+                                             public InheritableTransientDependencyAttribute(params Type[] t)
+                                             {
+                                             }
+                                         }
+                                         //###########################
                                          internal static partial class SourceGeneratorInjectDependencies
                                          {
                                              public static IServiceCollection InjectFromSourceGenerator(this IServiceCollection services) => services.InjectScoped().InjectSingleton()
-                                             .InjectTransient().InjectGenericScoped().InjectGenericSingleton().InjectGenericTransient();
+                                             .InjectTransient().InjectGenericScoped().InjectGenericSingleton().InjectGenericTransient().InjectScopedInheritable()
+                                             .InjectSingletonInheritable().InjectTransientInheritable();
                                              private static partial IServiceCollection InjectScoped(this IServiceCollection services);
                                              private static partial IServiceCollection InjectSingleton(this IServiceCollection services);
                                              private static partial IServiceCollection InjectTransient(this IServiceCollection services);
@@ -63,6 +100,10 @@ public class InjectBasics : IIncrementalGenerator
                                              private static partial IServiceCollection InjectGenericScoped(this IServiceCollection services);
                                              private static partial IServiceCollection InjectGenericSingleton(this IServiceCollection services);
                                              private static partial IServiceCollection InjectGenericTransient(this IServiceCollection services);
+                                         
+                                             private static partial IServiceCollection InjectScopedInheritable(this IServiceCollection services);
+                                             private static partial IServiceCollection InjectSingletonInheritable(this IServiceCollection services);
+                                             private static partial IServiceCollection InjectTransientInheritable(this IServiceCollection services);
                                          }
                                          """;
 
