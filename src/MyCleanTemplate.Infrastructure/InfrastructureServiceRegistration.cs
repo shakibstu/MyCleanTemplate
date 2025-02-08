@@ -21,20 +21,11 @@ public static class InfrastructureServiceRegistration
             options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
                 .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>(), serviceProvider.GetRequiredService<TracerProvider>())));
 
-        services.AddSingleton(new ProxyGenerator()).InjectFromSourceGenerator();
-        services.AddRepository<ITestRepository, TestRepository>();
+        services.InjectFromSourceGenerator();
         return services;
     }
 
-    private static IServiceCollection AddRepository<T, TE>(this IServiceCollection services) where TE : class, T
-        =>
-            services.AddScoped(typeof(T), serviceProvider =>
-            {
-                var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
-                var actual = ActivatorUtilities.CreateInstance<TE>(serviceProvider);
-                var interceptor = ActivatorUtilities.CreateInstance<LogRepositoryInterceptor>(serviceProvider);
-                return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), actual, interceptor);
-            });
+
     public static async Task ConfigureInfrastructure(this IServiceProvider serviceProvider)
     {
         var scope = serviceProvider.CreateAsyncScope();

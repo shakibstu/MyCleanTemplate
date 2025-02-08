@@ -2,9 +2,12 @@
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Common;
 using MyCleanTemplate.Infrastructure.Persistence;
+using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Tests;
 
+[ScopedDependencyWithInterception<LogRepositoryInterceptor>(typeof(ITestRepository))]
 internal class TestRepository(ApplicationDbContext context) : BaseRepository<TestEntity>(context), ITestRepository
 {
     private readonly DbSet<TestEntity> _entities = context.Tests;

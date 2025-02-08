@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,6 +12,7 @@ public static class InjectIncrementalDependencies
         InitializeWithLevelWithoutGeneric(context, level);
         InitializeGenericWithLevel(context, level);
         InitializeGenericWithInherit(context, level);
+        InitializeWithInterceptionNonInheritable(context, level);
     }
     private static bool IsClassDeclaration(SyntaxNode node)
     {
@@ -93,6 +95,89 @@ public static class InjectIncrementalDependencies
         {
             var injected = string.Format(template.ToString(), string.Join("\n", injections));
             ctx.AddSource($"{level}.Inheritable.cs", injected);
+        });
+    }
+
+    private static string GetInterceptionHelper(string level)
+    {
+        return @"            private static IServiceCollection " + level +
+               @"InterceptWithTarget<T, TInterceptor, TE>(this IServiceCollection services) where TE : class, T where TInterceptor: IInterceptor
+                =>
+                    services.Add" + level + @"(typeof(T), serviceProvider =>
+                    {{
+                        var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
+                        var actual = ActivatorUtilities.CreateInstance<TE>(serviceProvider);
+                        var interceptor = ActivatorUtilities.CreateInstance<TInterceptor>(serviceProvider);
+                        return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), actual, interceptor);
+                    }});
+            
+            private static IServiceCollection " + level +
+               @"InterceptWithoutTarget<T, TInterceptor>(this IServiceCollection services) where TInterceptor : IInterceptor
+                =>
+                    services.Add" + level + @"(typeof(T), serviceProvider =>
+                    {{
+                        var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
+                        var interceptor = ActivatorUtilities.CreateInstance<TInterceptor>(serviceProvider);
+                        return proxyGenerator.CreateInterfaceProxyWithoutTarget(typeof(T), interceptor);
+                    }});";
+    }
+    private static void InitializeWithInterceptionNonInheritable(IncrementalGeneratorInitializationContext context, string level)
+    {
+        var template = new StringBuilder(@"
+                             namespace ServiceGenerator;
+                             using Microsoft.Extensions.DependencyInjection;
+                             using Castle.DynamicProxy;
+                             internal static partial class SourceGeneratorInjectDependencies
+                             {{
+                                 private static partial IServiceCollection Inject" + level + @"InterceptionNonInheritable
+            (this IServiceCollection services)
+                                             {{ 
+                                                {0}
+                                                return services;
+                                             }}
+                                    " + GetInterceptionHelper(level) + @"
+    }}
+            ");
+        var provider = context.SyntaxProvider.ForAttributeWithMetadataName($"ServiceGenerator.{level}DependencyWithInterceptionAttribute`1",
+            (node, _) => node is ClassDeclarationSyntax, (syntaxContext, _) =>
+            {
+                var classDeclaration = (ClassDeclarationSyntax)syntaxContext.TargetNode;
+                var classSymbol = (INamedTypeSymbol)syntaxContext.TargetSymbol;
+                return (classDeclaration, classSymbol, syntaxContext.Attributes);
+            }).SelectMany((info, _) =>
+            {
+                var array = ImmutableArray
+                    .CreateBuilder<(ClassDeclarationSyntax node, INamedTypeSymbol symbol, AttributeData attribute)>(
+                        info.Attributes.Length);
+                foreach (var attribute in info.Attributes)
+                {
+                    array.Add((info.classDeclaration, info.classSymbol, attribute));
+                }
+
+                return array.ToImmutable();
+            }).Collect();
+
+        context.RegisterSourceOutput(provider, (a, infos) =>
+        {
+
+            StringBuilder builder = new StringBuilder();
+
+            foreach (var info in infos)
+            {
+                builder.AppendLine();
+                var interceptor = info.attribute.AttributeClass!.TypeArguments[0].OriginalDefinition.ToString();
+                var injections = info.attribute.ConstructorArguments[0].Values.Select(b=>b.Value!.ToString());
+                foreach (var injection in injections)
+                {
+
+                    builder.Append(
+                        $"services.{level}InterceptWithTarget<{injection},{interceptor},{GetType(info.symbol)}>();");
+                    builder.AppendLine();
+                }
+            }
+
+            var injected = string.Format(template.ToString(), builder);
+            a.AddSource($"{level}.Interceptor.NonInheritable.g.cs", injected);
         });
     }
 

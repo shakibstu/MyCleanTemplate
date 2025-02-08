@@ -16,7 +16,29 @@ public class InjectBasics : IIncrementalGenerator
 
                                          using System;
                                          using Microsoft.Extensions.DependencyInjection;
-
+                                         using Castle.DynamicProxy;
+                                         
+                                         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+                                         internal partial class ScopedDependencyWithInterceptionAttribute<T> : Attribute where T : IInterceptor
+                                         {
+                                             public ScopedDependencyWithInterceptionAttribute(params Type[] t)
+                                             {
+                                             }
+                                         }
+                                         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+                                         internal partial class SingletonDependencyWithInterceptionAttribute<T> : Attribute where T : IInterceptor
+                                         {
+                                             public SingletonDependencyWithInterceptionAttribute(params Type[] t)
+                                             {
+                                             }
+                                         }
+                                         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+                                         internal class TransientDependencyWithInterceptionAttribute<T> : Attribute where T : IInterceptor
+                                         {
+                                             public TransientDependencyWithInterceptionAttribute(params Type[] t)
+                                             {
+                                             }
+                                         }
                                          [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
                                          internal class ScopedDependencyAttribute<T> : Attribute
                                          {
@@ -90,9 +112,11 @@ public class InjectBasics : IIncrementalGenerator
                                          //###########################
                                          internal static partial class SourceGeneratorInjectDependencies
                                          {
-                                             public static IServiceCollection InjectFromSourceGenerator(this IServiceCollection services) => services.InjectScoped().InjectSingleton()
+                                             public static IServiceCollection InjectFromSourceGenerator(this IServiceCollection services) => services.AddSingleton(new ProxyGenerator()).InjectScoped().InjectSingleton()
                                              .InjectTransient().InjectGenericScoped().InjectGenericSingleton().InjectGenericTransient().InjectScopedInheritable()
-                                             .InjectSingletonInheritable().InjectTransientInheritable();
+                                             .InjectSingletonInheritable().InjectTransientInheritable()
+                                             .InjectScopedInterceptionNonInheritable().InjectSingletonInterceptionNonInheritable().InjectTransientInterceptionNonInheritable();
+                                             
                                              private static partial IServiceCollection InjectScoped(this IServiceCollection services);
                                              private static partial IServiceCollection InjectSingleton(this IServiceCollection services);
                                              private static partial IServiceCollection InjectTransient(this IServiceCollection services);
@@ -104,6 +128,10 @@ public class InjectBasics : IIncrementalGenerator
                                              private static partial IServiceCollection InjectScopedInheritable(this IServiceCollection services);
                                              private static partial IServiceCollection InjectSingletonInheritable(this IServiceCollection services);
                                              private static partial IServiceCollection InjectTransientInheritable(this IServiceCollection services);
+                                             
+                                             private static partial IServiceCollection InjectScopedInterceptionNonInheritable(this IServiceCollection services);
+                                             private static partial IServiceCollection InjectSingletonInterceptionNonInheritable(this IServiceCollection services);
+                                             private static partial IServiceCollection InjectTransientInterceptionNonInheritable(this IServiceCollection services);
                                          }
                                          """;
 
