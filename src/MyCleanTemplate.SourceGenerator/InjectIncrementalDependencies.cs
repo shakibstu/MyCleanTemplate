@@ -42,7 +42,7 @@ public static class InjectIncrementalDependencies
             types.AddRange(interfaceAttributes.SelectMany(GetTypeOfParametricAttribute));
         }
 
-        var tmpSymbol = classSymbol;
+        var tmpSymbol = classSymbol.BaseType;
 
         while (tmpSymbol != null)
         {
