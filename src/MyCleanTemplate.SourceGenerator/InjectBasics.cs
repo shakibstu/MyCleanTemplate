@@ -18,21 +18,23 @@ public class InjectBasics : IIncrementalGenerator
                                          using Microsoft.Extensions.DependencyInjection;
                                          using Castle.DynamicProxy;
                                          
-                                         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
                                          internal partial class ScopedDependencyWithInterceptionAttribute<T> : Attribute where T : IInterceptor
                                          {
                                              public ScopedDependencyWithInterceptionAttribute(params Type[] t)
                                              {
                                              }
                                          }
-                                         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+                                         
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
                                          internal partial class SingletonDependencyWithInterceptionAttribute<T> : Attribute where T : IInterceptor
                                          {
                                              public SingletonDependencyWithInterceptionAttribute(params Type[] t)
                                              {
                                              }
                                          }
-                                         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+                                         
+                                         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
                                          internal class TransientDependencyWithInterceptionAttribute<T> : Attribute where T : IInterceptor
                                          {
                                              public TransientDependencyWithInterceptionAttribute(params Type[] t)

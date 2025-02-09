@@ -100,26 +100,33 @@ public static class InjectIncrementalDependencies
 
     private static string GetInterceptionHelper(string level)
     {
-        return @"            private static IServiceCollection " + level +
-               @"InterceptWithTarget<T, TInterceptor, TE>(this IServiceCollection services) where TE : class, T where TInterceptor: IInterceptor
-                =>
-                    services.Add" + level + @"(typeof(T), serviceProvider =>
-                    {{
-                        var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
-                        var actual = ActivatorUtilities.CreateInstance<TE>(serviceProvider);
-                        var interceptor = ActivatorUtilities.CreateInstance<TInterceptor>(serviceProvider);
-                        return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), actual, interceptor);
-                    }});
+        return @"
+    private static IServiceCollection "+level+ @"InterceptWithTarget(this IServiceCollection services,
+        Type interfaceType, Type interceptorType, Type classType)
+    {{
+        return services.Add" + level+@"(interfaceType, serviceProvider =>
+        {{
+            {{
+                var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
+                var actual = ActivatorUtilities.CreateInstance(serviceProvider,classType);
+                var interceptor = (IInterceptor) ActivatorUtilities.CreateInstance(serviceProvider, interceptorType);
+                return proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, actual, interceptor);
+            }}
+        }});
+    }}
             
-            private static IServiceCollection " + level +
-               @"InterceptWithoutTarget<T, TInterceptor>(this IServiceCollection services) where TInterceptor : IInterceptor
-                =>
-                    services.Add" + level + @"(typeof(T), serviceProvider =>
-                    {{
-                        var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
-                        var interceptor = ActivatorUtilities.CreateInstance<TInterceptor>(serviceProvider);
-                        return proxyGenerator.CreateInterfaceProxyWithoutTarget(typeof(T), interceptor);
-                    }});";
+    private static IServiceCollection "+level+@"InterceptWithoutTarget(this IServiceCollection services,
+        Type interfaceType, Type interceptorType)
+    {{
+        return services.Add"+level+@"(interfaceType, serviceProvider =>
+        {{
+            {{
+                var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
+                var interceptor = (IInterceptor)ActivatorUtilities.CreateInstance(serviceProvider, interceptorType);
+                return proxyGenerator.CreateInterfaceProxyWithoutTarget(interfaceType, interceptor);
+            }}
+        }});
+    }}";
     }
     private static void InitializeWithInterceptionNonInheritable(IncrementalGeneratorInitializationContext context, string level)
     {
@@ -166,12 +173,19 @@ public static class InjectIncrementalDependencies
             {
                 builder.AppendLine();
                 var interceptor = info.attribute.AttributeClass!.TypeArguments[0].OriginalDefinition.ToString();
-                var injections = info.attribute.ConstructorArguments[0].Values.Select(b=>b.Value!.ToString());
+                var injections = info.attribute.ConstructorArguments[0].Values.Select(b=>b.Value!.ToString()).ToArray();
+                
                 foreach (var injection in injections)
                 {
-
                     builder.Append(
-                        $"services.{level}InterceptWithTarget<{injection},{interceptor},{GetType(info.symbol)}>();");
+                        $"services.{level}InterceptWithTarget(typeof({injection}),typeof({interceptor}),typeof({GetType(info.symbol)}));");
+                    builder.AppendLine();
+                }
+
+                if (!injections.Any())
+                {
+                    builder.Append(
+                        $"services.{level}InterceptWithoutTarget(typeof({GetType(info.symbol)}),typeof({interceptor}));");
                     builder.AppendLine();
                 }
             }
