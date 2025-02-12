@@ -8,7 +8,6 @@ using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
 using MyCleanTemplate.Infrastructure.Tests;
 using OpenTelemetry.Trace;
-using Serilog;
 using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure;
@@ -17,9 +16,9 @@ public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+        services.AddDbContext<ApplicationDbContext>((_, options) =>
             options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
-                .AddInterceptors(new LogDbInterceptor(serviceProvider.GetRequiredService<ILogger>(), serviceProvider.GetRequiredService<TracerProvider>())));
+                .AddInterceptors(new LogDbInterceptor()));
 
         services.InjectFromSourceGenerator();
         return services;

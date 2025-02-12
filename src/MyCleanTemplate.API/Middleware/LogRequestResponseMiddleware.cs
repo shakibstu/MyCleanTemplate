@@ -1,14 +1,11 @@
 ﻿using MyCleanTemplate.Domain.Common.Logs;
-using Serilog.Context;
 using ServiceGenerator;
 using System.Text.Json;
-using ILogger = Serilog.ILogger;
-using LogLevel = MyCleanTemplate.Domain.Common.Logs.LogLevel;
 
 namespace MyCleanTemplate.API.Middleware;
 
 [TransientDependency<LogRequestResponseMiddleware>]
-public class LogRequestResponseMiddleware(ILogger logger) : IMiddleware
+public class LogRequestResponseMiddleware: IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -29,17 +26,6 @@ public class LogRequestResponseMiddleware(ILogger logger) : IMiddleware
         activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
         activity?.SetTag("API.Path", context.Request.Path);
 
-
-        using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
-        using (LogContext.PushProperty(nameof(LogLevel), LogLevel.RequestInApi))
-        using (LogContext.PushProperty("API.RequestBody", bodyAsText))
-        using (LogContext.PushProperty("API.QueryParams", JsonSerializer.Serialize(context.Request.Query.Select(a => new { a.Key, a.Value }))))
-        using (LogContext.PushProperty("API.ActionName", context.GetEndpoint()?.DisplayName))
-        using (LogContext.PushProperty("API.Path", context.Request.Path))
-        {
-            logger.Information($"API.Request -> {context.GetEndpoint()?.DisplayName ?? ""}");
-        }
-
         await next(context);
 
         stream.Seek(0, SeekOrigin.Begin);
@@ -53,15 +39,5 @@ public class LogRequestResponseMiddleware(ILogger logger) : IMiddleware
         activity?.SetTag("API.ResponseBody", responseBody);
         activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
         activity?.SetTag("API.Path", context.Request.Path);
-
-        using (LogContext.PushProperty(nameof(LogKeywords.SourceContext), LogKeywords.SourceContext))
-        using (LogContext.PushProperty(nameof(LogLevel), LogLevel.ResponseApi))
-        using (LogContext.PushProperty("API.ResponseBody", responseBody))
-        using (LogContext.PushProperty("API.ActionName", context.GetEndpoint()?.DisplayName))
-        using (LogContext.PushProperty("API.Path", context.Request.Path))
-        {
-            logger.Information($"API.Response -> {context.GetEndpoint()?.DisplayName ?? ""}");
-        }
-
     }
 }
