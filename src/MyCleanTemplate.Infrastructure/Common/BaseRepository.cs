@@ -1,11 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Domain.Common;
+using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Persistence;
+using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
 using System.Linq.Expressions;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Common;
 
+[InheritableTransientInterceptInterfaces<LogRepositoryInterceptor>]
 internal abstract class BaseRepository<T>(ApplicationDbContext context) : IBaseRepository<T>
     where T : BaseEntity
 {

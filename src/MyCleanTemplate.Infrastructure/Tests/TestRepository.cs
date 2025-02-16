@@ -7,7 +7,6 @@ using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Tests;
 
-[ScopedDependencyWithInterception<LogRepositoryInterceptor>(typeof(ITestRepository))]
 internal class TestRepository(ApplicationDbContext context) : BaseRepository<TestEntity>(context), ITestRepository
 {
     private readonly DbSet<TestEntity> _entities = context.Tests;

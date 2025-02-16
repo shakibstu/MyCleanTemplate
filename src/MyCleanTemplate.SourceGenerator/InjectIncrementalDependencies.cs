@@ -13,6 +13,8 @@ public static class InjectIncrementalDependencies
         InitializeGenericWithLevel(context, level);
         InitializeGenericWithInherit(context, level);
         InitializeWithInterceptionNonInheritable(context, level);
+        InitializeWithInterceptionInheritable(context, level);
+        InitializeWithInterceptionInheritableInjectInterfaces(context, level);
     }
     private static bool IsClassDeclaration(SyntaxNode node)
     {
@@ -25,9 +27,9 @@ public static class InjectIncrementalDependencies
         return (context.SemanticModel, classDeclaration);
     }
 
-    private static List<string> InheritableInjections(SemanticModel semanticModel, ClassDeclarationSyntax classDeclaration, string attributeName)
+    private static List<(string generic, List<string> types)> InheritableInjections(SemanticModel semanticModel, ClassDeclarationSyntax classDeclaration, string attributeName)
     {
-        var types = new List<string>();
+        var types = new List<(string generic, List<string> types)>();
         // Get the symbol for the current class
         var classSymbol = semanticModel.GetDeclaredSymbol(classDeclaration) as INamedTypeSymbol;
         if (classSymbol == null)
@@ -36,10 +38,10 @@ public static class InjectIncrementalDependencies
         // Check interfaces of class
         var interfaceAttributes = classSymbol.AllInterfaces.SelectMany(a => a.GetAttributes())
             .Where(b => GetType(b.AttributeClass!) == attributeName).ToList();
-        
+
         if (interfaceAttributes.Any())
         {
-            types.AddRange(interfaceAttributes.SelectMany(GetTypeOfParametricAttribute));
+            types.AddRange(interfaceAttributes.Select(GetTypeOfParametricAttribute));
         }
 
         var tmpSymbol = classSymbol.BaseType;
@@ -50,7 +52,7 @@ public static class InjectIncrementalDependencies
                 .Where(attr => GetType(attr.AttributeClass!) == attributeName).ToList();
             if (attributes.Any())
             {
-                types.AddRange(attributes.SelectMany(GetTypeOfParametricAttribute));
+                types.AddRange(attributes.Select(GetTypeOfParametricAttribute));
             }
             tmpSymbol = tmpSymbol.BaseType;
         }
@@ -85,10 +87,12 @@ public static class InjectIncrementalDependencies
                 var semanticModel = syntax.SemanticModel;
                 var classDeclaration = syntax.ClassSyntax;
                 var classSymbol = semanticModel.GetDeclaredSymbol(classDeclaration) as INamedTypeSymbol;
-                var injections = InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}DependencyAttribute");
-                injections.AddRange(InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}DependencyAttribute<>"));
+                var injections = InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}Attribute");
+                injections.AddRange(InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}Attribute<>"));
 
-                return injections.Select(injection => $"services.Add{level}(typeof({injection}),typeof({GetType(classSymbol!)}));");
+                var finalInjections = injections.SelectMany(MergeString);
+
+                return finalInjections.Select(injection => $"services.Add{level}(typeof({injection}),typeof({GetType(classSymbol!)}));");
             }).Collect();
         // Step 3: Check for the parent class attribute
         context.RegisterSourceOutput(classDeclarationsWithSemanticModel, (ctx, injections) =>
@@ -101,10 +105,10 @@ public static class InjectIncrementalDependencies
     private static string GetInterceptionHelper(string level)
     {
         return @"
-    private static IServiceCollection "+level+ @"InterceptWithTarget(this IServiceCollection services,
+    private static IServiceCollection " + level + @"InterceptWithTarget(this IServiceCollection services,
         Type interfaceType, Type interceptorType, Type classType)
     {{
-        return services.Add" + level+@"(interfaceType, serviceProvider =>
+        return services.Add" + level + @"(interfaceType, serviceProvider =>
         {{
             {{
                 var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
@@ -115,10 +119,10 @@ public static class InjectIncrementalDependencies
         }});
     }}
             
-    private static IServiceCollection "+level+@"InterceptWithoutTarget(this IServiceCollection services,
+    private static IServiceCollection " + level + @"InterceptWithoutTarget(this IServiceCollection services,
         Type interfaceType, Type interceptorType)
     {{
-        return services.Add"+level+@"(interfaceType, serviceProvider =>
+        return services.Add" + level + @"(interfaceType, serviceProvider =>
         {{
             {{
                 var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
@@ -142,10 +146,9 @@ public static class InjectIncrementalDependencies
                                                 {0}
                                                 return services;
                                              }}
-                                    " + GetInterceptionHelper(level) + @"
-    }}
+                             }}
             ");
-        var provider = context.SyntaxProvider.ForAttributeWithMetadataName($"ServiceGenerator.{level}DependencyWithInterceptionAttribute`1",
+        var provider = context.SyntaxProvider.ForAttributeWithMetadataName($"ServiceGenerator.{level}InterceptionAttribute`1",
             (node, _) => node is ClassDeclarationSyntax, (syntaxContext, _) =>
             {
                 var classDeclaration = (ClassDeclarationSyntax)syntaxContext.TargetNode;
@@ -173,8 +176,8 @@ public static class InjectIncrementalDependencies
             {
                 builder.AppendLine();
                 var interceptor = info.attribute.AttributeClass!.TypeArguments[0].OriginalDefinition.ToString();
-                var injections = info.attribute.ConstructorArguments[0].Values.Select(b=>b.Value!.ToString()).ToArray();
-                
+                var injections = info.attribute.ConstructorArguments[0].Values.Select(b => b.Value!.ToString()).ToArray();
+
                 foreach (var injection in injections)
                 {
                     builder.Append(
@@ -195,14 +198,98 @@ public static class InjectIncrementalDependencies
         });
     }
 
-    private static void InitializeWithLevelWithoutGeneric(IncrementalGeneratorInitializationContext context , string level)
+    private static void InitializeWithInterceptionInheritable(IncrementalGeneratorInitializationContext context, string level)
+    {
+        var template = new StringBuilder(@"
+                             namespace ServiceGenerator;
+                             using Microsoft.Extensions.DependencyInjection;
+                             using Castle.DynamicProxy;
+                             internal static partial class SourceGeneratorInjectDependencies
+                             {{
+                                 private static partial IServiceCollection Inject" + level + @"InterceptionInheritable
+            (this IServiceCollection services)
+                                             {{ 
+                                                {0}
+                                                return services;
+                                             }}
+                                    " + GetInterceptionHelper(level) + @"
+    }}
+            ");
+        // Step 1: Identify all class declarations
+        var classDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => IsClassDeclaration(node),
+                transform: static (context, _) => GetClassDeclarationSyntax(context));
+
+        // Step 2: Combine syntax and semantic model
+        var classDeclarationsWithSemanticModel = classDeclarations
+            .SelectMany((syntax, _) =>
+            {
+                var semanticModel = syntax.SemanticModel;
+                var classDeclaration = syntax.ClassSyntax;
+                var classSymbol = semanticModel.GetDeclaredSymbol(classDeclaration) as INamedTypeSymbol;
+                var injections = InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}InterceptionAttribute<>");
+
+                return injections.SelectMany(injection => injection.types.Select(type =>
+                    $"services.{level}InterceptWithTarget(typeof({type}),typeof({injection.generic}),typeof({GetType(classSymbol!)}));"));
+            }).Collect();
+        // Step 3: Check for the parent class attribute
+        context.RegisterSourceOutput(classDeclarationsWithSemanticModel, (ctx, injections) =>
+        {
+            var injected = string.Format(template.ToString(), string.Join("\n", injections));
+            ctx.AddSource($"{level}.Interceptor.Inheritable.g.cs", injected);
+        });
+    }
+
+    private static void InitializeWithInterceptionInheritableInjectInterfaces(IncrementalGeneratorInitializationContext context, string level)
+    {
+        var template = new StringBuilder(@"
+                             namespace ServiceGenerator;
+                             using Microsoft.Extensions.DependencyInjection;
+                             using Castle.DynamicProxy;
+                             internal static partial class SourceGeneratorInjectDependencies
+                             {{
+                                 private static partial IServiceCollection InjectInheritable" + level + @"InterceptInterfaces
+            (this IServiceCollection services)
+                                             {{ 
+                                                {0}
+                                                return services;
+                                             }}
+    }}
+            ");
+        // Step 1: Identify all class declarations
+        var classDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => IsClassDeclaration(node),
+                transform: static (context, _) => GetClassDeclarationSyntax(context));
+
+        // Step 2: Combine syntax and semantic model
+        var classDeclarationsWithSemanticModel = classDeclarations
+            .SelectMany((syntax, _) =>
+            {
+                var semanticModel = syntax.SemanticModel;
+                var classDeclaration = syntax.ClassSyntax;
+                var classSymbol = semanticModel.GetDeclaredSymbol(classDeclaration) as INamedTypeSymbol;
+                var injections = InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}InterceptInterfacesAttribute<>");
+
+                return injections.SelectMany(injection => classSymbol.Interfaces.Select(type=> $"services.{level}InterceptWithTarget(typeof({GetType(type)}),typeof({injection.generic}),typeof({GetType(classSymbol!)}));"));
+            }).Collect();
+        // Step 3: Check for the parent class attribute
+        context.RegisterSourceOutput(classDeclarationsWithSemanticModel, (ctx, injections) =>
+        {
+            var injected = string.Format(template.ToString(), string.Join("\n", injections));
+            ctx.AddSource($"{level}.Interceptor.AllInterfaces.Inheritable.g.cs", injected);
+        });
+    }
+
+    private static void InitializeWithLevelWithoutGeneric(IncrementalGeneratorInitializationContext context, string level)
     {
         var template = new StringBuilder(@"
                              namespace ServiceGenerator;
                              using Microsoft.Extensions.DependencyInjection;
                              internal static partial class SourceGeneratorInjectDependencies
                              {{
-                                 private static partial IServiceCollection Inject"+ level + @"(this IServiceCollection services)
+                                 private static partial IServiceCollection Inject" + level + @"(this IServiceCollection services)
                                  {{ 
                                     {0}
                                     return services;
@@ -235,7 +322,7 @@ public static class InjectIncrementalDependencies
             foreach (var info in infos)
             {
                 builder.AppendLine();
-                var injections = GetTypeOfParametricAttribute(info.attribute);
+                var injections = MergeString(GetTypeOfParametricAttribute(info.attribute));
                 foreach (var injection in injections)
                 {
 
@@ -288,17 +375,17 @@ public static class InjectIncrementalDependencies
 
             return array.ToImmutable();
         }).Collect();
-        
+
         context.RegisterSourceOutput(provider, (a, infos) =>
         {
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             foreach (var info in infos)
             {
 
                 builder.AppendLine();
-                var injections = GetTypeOfParametricAttribute(info.attribute);
+                var injections = MergeString(GetTypeOfParametricAttribute(info.attribute));
                 foreach (var injection in injections)
                 {
 
@@ -313,16 +400,22 @@ public static class InjectIncrementalDependencies
         });
 
     }
-    private static IEnumerable<string> GetTypeOfParametricAttribute(AttributeData attribute)
+    private static (string generic, List<string> parameters) GetTypeOfParametricAttribute(AttributeData attribute)
     {
-        if(attribute.AttributeClass!.IsGenericType)
+        var generic = "";
+        List<string> parameters = new List<string>();
+        if (attribute.AttributeClass!.IsGenericType)
         {
-            return attribute.AttributeClass!.TypeArguments.Select(t => t.OriginalDefinition.ToString());
+            generic = attribute.AttributeClass!.TypeArguments.Select(t => t.OriginalDefinition.ToString()).ToArray()[0];
         }
-        if ( attribute.ConstructorArguments[0].Values is IEnumerable<TypedConstant> types)
+        if (attribute.ConstructorArguments.Any() && attribute.ConstructorArguments[0].Values is IEnumerable<TypedConstant> types)
         {
-            return types.Select(t => t.Value!.ToString());
+            parameters = types.Select(t => t.Value!.ToString()).ToList();
         }
-        return [];
+        return (generic, parameters);
     }
+
+    private static List<string> MergeString((string generic, List<string> parameters) tuple) => string.IsNullOrEmpty(tuple.generic)
+        ? tuple.parameters
+        : tuple.parameters.Union([tuple.generic]).ToList();
 }

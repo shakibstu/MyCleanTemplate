@@ -1,8 +1,10 @@
 ﻿using System.Linq.Expressions;
+using MyCleanTemplate.Domain.Common.Logs;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.Domain.Abstractions;
 
-public interface IBaseRepository<T> where T : BaseEntity
+public interface IBaseRepository<T> : IRepository where T : BaseEntity
 {
     Task<int> Count();
     Task<bool> Any(Expression<Func<T, bool>> predicate = null);
@@ -12,4 +14,8 @@ public interface IBaseRepository<T> where T : BaseEntity
     Task<T> Get(Guid id);
     Task<List<T>> GetAll();
     Task Delete(Guid id, bool autoSave = false);
+}
+
+public interface IRepository
+{
 }

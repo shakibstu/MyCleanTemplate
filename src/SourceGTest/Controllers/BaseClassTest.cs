@@ -11,8 +11,8 @@ namespace SourceGTest.Controllers
     {
     }
 
-    [InheritableScopedDependency(typeof(string),typeof(int))]
-    [InheritableScopedDependency<object>]
+    [InheritableScoped(typeof(string),typeof(int))]
+    [InheritableScoped<object>]
     public class TestClass : ControllerBase
     {
 
