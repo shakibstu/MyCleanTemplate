@@ -14,9 +14,7 @@ internal class TestSeeder(ITestRepository repository) : IDataSeeder
     {
         if (!await repository.Any())
         {
-            var vo = TestValueObject.Create("st1", "city", "state", "country", "123");
-            var testEntity = TestEntity.Create(Guid.NewGuid(), "test", vo, vo, new List<TestValueObject> { vo }, TestEnum.Test0);
-            await repository.Add(testEntity, true);
+            await repository.CreateTest("test");
         }
     }
 }

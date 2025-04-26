@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Domain.Common;
-using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
 using System.Linq.Expressions;

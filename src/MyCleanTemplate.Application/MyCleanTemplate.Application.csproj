@@ -8,19 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.10.0" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MyCleanTemplate.Application.Contract\MyCleanTemplate.Application.Contract.csproj" />
-    <ProjectReference Include="..\MyCleanTemplate.Domain\MyCleanTemplate.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="MyCleanTemplate.IntegrationTest" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MyCleanTemplate.Domain\MyCleanTemplate.Domain.csproj" />
     <ProjectReference Include="..\MyCleanTemplate.SourceGenerator\MyCleanTemplate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\Behaviors\Helpers\" />
   </ItemGroup>
 </Project>

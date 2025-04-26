@@ -1,14 +1,14 @@
 using MediatR;
 using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
 using MyCleanTemplate.Application.Contract.Test.Commands;
+using MyCleanTemplate.Domain.Test;
 
 namespace MyCleanTemplate.Application.Test.CommandHandlers;
 
-public class TesCreateCommandHandler : ICommandHandler<CreateTestCommand>
+public class TesCreateCommandHandler(ITestRepository testRepository) : ICommandHandler<CreateTestCommand>
 {
-    public Task Handle(CreateTestCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateTestCommand request, CancellationToken cancellationToken)
     {
-        Console.WriteLine("s");
-        return Unit.Task;
+        await testRepository.CreateTest(request.Name);
     }
 }

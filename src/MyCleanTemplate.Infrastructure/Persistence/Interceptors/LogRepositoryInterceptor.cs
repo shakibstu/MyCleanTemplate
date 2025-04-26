@@ -12,7 +12,7 @@ internal class LogRepositoryInterceptor : IInterceptor
         using var activity =
             TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelDb);
         activity?.SetTag("Repository.Arguments", arguments);
-        activity?.SetTag("Repository.MethodName", invocation);
+        activity?.SetTag("Repository.MethodName", $"{invocation.TargetType?.FullName ?? ""}.{invocation.Method.Name}");
         invocation.Proceed();
 
         var valueResponse = invocation.ReturnValue.GetType().GetProperties().First(a => a.Name == "Result")

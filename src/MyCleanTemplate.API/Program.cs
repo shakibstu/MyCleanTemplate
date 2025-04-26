@@ -32,14 +32,16 @@ builder.Services.AddOpenTelemetry()
     //})
     .WithTracing(b =>
     {
-        b.AddSource(LogKeywords.TelemetryServiceName)
+        b
+            .AddSource(LogKeywords.TelemetryServiceName)
             .ConfigureResource(resource =>
                 resource.AddService(
                     serviceName: LogKeywords.TelemetryServiceName))
             .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
             //.AddConsoleExporter()
             //.AddZipkinExporter()
-        //.AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!))
+            //.AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!))
             ;
     })
     .UseOtlpExporter()
