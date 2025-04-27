@@ -13,18 +13,18 @@ public abstract class BaseIntegrationTest(IntegrationTestWebApplicationFactory a
     protected IServiceProvider ServiceProvider => _scope!.ServiceProvider;
     private IServiceScope? _scope;
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         _scope = applicationFactory.Services.CreateScope();
         Sender = _scope.ServiceProvider.GetRequiredService<ISender>();
         HttpClient = applicationFactory.CreateClient();
-        return ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreatedAsync();
+        await ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreatedAsync();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         _scope?.Dispose();
         HttpClient.Dispose();
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

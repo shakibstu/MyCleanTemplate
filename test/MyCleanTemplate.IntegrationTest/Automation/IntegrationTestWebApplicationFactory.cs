@@ -35,9 +35,9 @@ public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Progra
         Dispose(false);
     }
 
-    public Task InitializeAsync()
+    public ValueTask InitializeAsync()
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
         //throw new NotImplementedException();
     }
 
