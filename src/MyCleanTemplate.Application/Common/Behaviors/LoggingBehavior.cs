@@ -8,7 +8,7 @@ namespace MyCleanTemplate.Application.Common.Behaviors;
 [TransientDependency(typeof(IPipelineBehavior<,>))]
 internal class LoggingBehavior<TRequest, TResponse>() : 
     IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+    where TRequest : notnull
 {
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
@@ -19,9 +19,9 @@ internal class LoggingBehavior<TRequest, TResponse>() :
             TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApp);
 
         activity?.SetTag("APP.RequestType", requestType);
-        activity?.SetTag("APP.Request", JsonSerializer.Serialize(request));
+        activity?.SetTag("APP.Request", request);
 
-        var response = await next();
+        var response = await next(cancellationToken);
         
         var responseType = LogHelper.GetFullName(response?.GetType());
 

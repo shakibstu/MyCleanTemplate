@@ -2,4 +2,4 @@
 
 namespace MyCleanTemplate.Application.Contract.Test.Commands;
 
-public sealed record CreateTestCommand(string Name, DateTime Date) : ICommand;
+public sealed record CreateTestCommand(string Name) : ICommand;

@@ -37,8 +37,8 @@ builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
                 resource.AddService(
                     serviceName: LogKeywords.TelemetryServiceName))
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
+            //.AddAspNetCoreInstrumentation()
+            //.AddHttpClientInstrumentation()
             //.AddConsoleExporter()
             //.AddZipkinExporter()
             //.AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!))

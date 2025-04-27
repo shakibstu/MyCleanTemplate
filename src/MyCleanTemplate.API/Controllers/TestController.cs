@@ -11,9 +11,9 @@ namespace MyCleanTemplate.API.Controllers;
 public class TestController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> GetCurrencies([FromBody] CreateTestRequest request)
+    public async Task<IActionResult> CreateTest([FromBody] CreateTestRequest request)
     {
-        await mediator.Send(new CreateTestCommand(request.Name, DateTime.Now));
+        await mediator.Send(new CreateTestCommand(request.Name));
         return Ok();
     }
 
