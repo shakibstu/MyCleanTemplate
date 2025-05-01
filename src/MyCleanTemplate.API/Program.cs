@@ -3,7 +3,7 @@ using MyCleanTemplate.Application;
 using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
 using OpenTelemetry;
-using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -21,15 +21,16 @@ builder.Logging.AddOpenTelemetry(logging =>
 {
     logging.IncludeFormattedMessage = true;
     logging.IncludeScopes = true;
+    logging.AddOtlpExporter().SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(LogKeywords.TelemetryServiceName));
 });
 
 builder.Services.AddOpenTelemetry()
-    //.WithMetrics(metrics =>
-    //{
-    //    metrics.AddAspNetCoreInstrumentation()
-    //        .AddHttpClientInstrumentation()
-    //        .AddRuntimeInstrumentation();
-    //})
+    .WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation().AddOtlpExporter().SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(LogKeywords.TelemetryServiceName));
+    })
     .WithTracing(b =>
     {
         b
@@ -37,6 +38,7 @@ builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
                 resource.AddService(
                     serviceName: LogKeywords.TelemetryServiceName))
+            .AddOtlpExporter()
             //.AddAspNetCoreInstrumentation()
             //.AddHttpClientInstrumentation()
             //.AddConsoleExporter()
@@ -44,7 +46,7 @@ builder.Services.AddOpenTelemetry()
             //.AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!))
             ;
     })
-    .UseOtlpExporter()
+    //.UseOtlpExporter()
     ;
 
 var app = builder.Build();

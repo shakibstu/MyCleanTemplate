@@ -6,7 +6,7 @@ using ServiceGenerator;
 namespace MyCleanTemplate.Application.Common.Behaviors;
 
 [TransientDependency(typeof(IPipelineBehavior<,>))]
-internal class LoggingBehavior<TRequest, TResponse>() : 
+internal class TracingBehavior<TRequest, TResponse> : 
     IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {

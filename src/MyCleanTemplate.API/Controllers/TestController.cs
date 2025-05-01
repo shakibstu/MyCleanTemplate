@@ -8,13 +8,17 @@ namespace MyCleanTemplate.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class TestController(IMediator mediator) : ControllerBase
+public class TestController(IMediator mediator, ILogger<TestController> logger) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> CreateTest([FromBody] CreateTestRequest request)
     {
-        await mediator.Send(new CreateTestCommand(request.Name));
-        return Ok();
+        using (logger.BeginScope("Processing this {name}", request.Name))
+        {
+            logger.LogError("LOG TEST!!");
+            await mediator.Send(new CreateTestCommand(request.Name));
+            return Ok();
+        }
     }
 
     [HttpPost]
