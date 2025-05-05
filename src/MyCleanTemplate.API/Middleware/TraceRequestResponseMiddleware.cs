@@ -1,4 +1,5 @@
-﻿using MyCleanTemplate.Domain.Common.Logs;
+﻿using System.Diagnostics;
+using MyCleanTemplate.Domain.Common.Logs;
 using ServiceGenerator;
 using System.Text.Json;
 
@@ -11,33 +12,42 @@ public class LogRequestResponseMiddleware: IMiddleware
     {
         using var activity =
             TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApi);
+        try
+        {
 
-        using var stream = new MemoryStream();
-        var originalResponseBody = context.Response.Body;
-        context.Response.Body = stream;
+            using var stream = new MemoryStream();
+            var originalResponseBody = context.Response.Body;
+            context.Response.Body = stream;
 
-        context.Request.EnableBuffering();
-        var bodyAsText = await new StreamReader(context.Request.Body).ReadToEndAsync();
-        context.Request.Body.Position = 0;
+            context.Request.EnableBuffering();
+            var bodyAsText = await new StreamReader(context.Request.Body).ReadToEndAsync();
+            context.Request.Body.Position = 0;
 
-        activity?.SetTag("API.RequestBody", bodyAsText);
-        activity?.SetTag("API.QueryParams",
-            JsonSerializer.Serialize(context.Request.Query.Select(a => new { a.Key, a.Value })));
-        activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
-        activity?.SetTag("API.Path", context.Request.Path);
+            activity?.SetTag("API.RequestBody", bodyAsText);
+            activity?.SetTag("API.QueryParams",
+                JsonSerializer.Serialize(context.Request.Query.Select(a => new { a.Key, a.Value })));
+            activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
+            activity?.SetTag("API.Path", context.Request.Path);
 
-        await next(context);
+            await next(context);
 
-        stream.Seek(0, SeekOrigin.Begin);
-        var responseBody = await new StreamReader(stream).ReadToEndAsync();
-        stream.Seek(0, SeekOrigin.Begin);
+            stream.Seek(0, SeekOrigin.Begin);
+            var responseBody = await new StreamReader(stream).ReadToEndAsync();
+            stream.Seek(0, SeekOrigin.Begin);
 
-        await stream.CopyToAsync(originalResponseBody);
+            await stream.CopyToAsync(originalResponseBody);
 
-        context.Response.Body = originalResponseBody;
+            context.Response.Body = originalResponseBody;
 
-        activity?.SetTag("API.ResponseBody", responseBody);
-        activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
-        activity?.SetTag("API.Path", context.Request.Path);
+            activity?.SetTag("API.ResponseBody", responseBody);
+            activity?.SetTag("API.ActionName", context.GetEndpoint()?.DisplayName);
+            activity?.SetTag("API.Path", context.Request.Path);
+        }
+        catch (Exception e)
+        {
+            activity?.AddException(e);
+            activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+            throw;
+        }
     }
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using MyCleanTemplate.API.Errors;
 using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
 using MyCleanTemplate.Domain.Common.Logs;
@@ -12,11 +14,12 @@ using ServiceGenerator;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectFromSourceGenerator();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Logging.AddOpenTelemetry(logging =>
 {
     logging.IncludeFormattedMessage = true;
@@ -49,6 +52,7 @@ builder.Services.AddOpenTelemetry()
     //.UseOtlpExporter()
     ;
 
+builder.Services.AddProblemDetails();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -60,8 +64,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
-
-app.UseExceptionHandler("/api/error");
+app.UseExceptionHandler();
 app.UseMiddleware<LogRequestResponseMiddleware>();
 app.UseRouting().UseEndpoints(endpoints => { endpoints.MapControllers(); });
 app.UseHttpsRedirection();
