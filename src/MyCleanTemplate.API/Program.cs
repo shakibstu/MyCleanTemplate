@@ -64,8 +64,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
-app.UseExceptionHandler();
 app.UseMiddleware<LogRequestResponseMiddleware>();
+app.UseExceptionHandler();
 app.UseRouting().UseEndpoints(endpoints => { endpoints.MapControllers(); });
 app.UseHttpsRedirection();
 app.UseAuthorization();
