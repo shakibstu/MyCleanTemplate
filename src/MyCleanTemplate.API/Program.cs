@@ -1,3 +1,4 @@
+using MyCleanTemplate.API;
 using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
 using MyCleanTemplate.Domain.Common.Logs;
@@ -8,6 +9,8 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ServiceGenerator;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,27 +20,35 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectFromSourceGenerator();
-builder.Logging.AddOpenTelemetry(logging =>
+builder.Logging.AddFilter( b => b > LogLevel.Information).AddOpenTelemetry(logging =>
 {
-    logging.IncludeFormattedMessage = true;
     logging.IncludeScopes = true;
-    logging.AddOtlpExporter().SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(LogKeywords.TelemetryServiceName));
+    logging.IncludeFormattedMessage = true;
+    logging.ParseStateValues = true;
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TelemetryHelper.TelemetryServiceName)).AddOtlpExporter();
 });
 
 builder.Services.AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
-        metrics.AddAspNetCoreInstrumentation()
+        metrics.AddMeter(TelemetryHelper.Meter.Name).AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
-            .AddRuntimeInstrumentation().AddOtlpExporter().SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(LogKeywords.TelemetryServiceName));
+            .AddRuntimeInstrumentation()
+            .AddOtlpExporter()
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TelemetryHelper.TelemetryServiceName));
     })
     .WithTracing(b =>
     {
-        b
-            .AddSource(LogKeywords.TelemetryServiceName)
+        b.AddSource(TelemetryHelper.TelemetryServiceName)
             .ConfigureResource(resource =>
                 resource.AddService(
-                    serviceName: LogKeywords.TelemetryServiceName))
+                    serviceName: TelemetryHelper.TelemetryServiceName).AddAttributes([new KeyValuePair<string, object>("Machine",Environment.MachineName)
+                ]))
+            .AddEntityFrameworkCoreInstrumentation("SPAAAAAN!!!",a =>
+            {
+                a.SetDbStatementForText = true;
+                a.SetDbStatementForStoredProcedure = true;
+            })
             .AddOtlpExporter()
             //.AddAspNetCoreInstrumentation()
             //.AddHttpClientInstrumentation()
@@ -71,4 +82,5 @@ await app.RunAsync();
 namespace MyCleanTemplate.API
 {
     public partial class Program { }
+
 }

@@ -10,7 +10,7 @@ internal class LogRepositoryInterceptor : IInterceptor
         var arguments = invocation.Arguments;
 
         using var activity =
-            TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelDb);
+            TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelRepository);
         activity?.SetTag("Repository.Arguments", arguments);
         activity?.SetTag("Repository.MethodName", $"{invocation.TargetType?.FullName ?? ""}.{invocation.Method.Name}");
         invocation.Proceed();

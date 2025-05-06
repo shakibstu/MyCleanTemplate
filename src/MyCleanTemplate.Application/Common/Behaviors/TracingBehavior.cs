@@ -16,7 +16,7 @@ internal class TracingBehavior<TRequest, TResponse> :
         var requestType = LogHelper.GetFullName(request.GetType());
 
         using var activity =
-            TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApp);
+            TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelApp);
 
         activity?.SetTag("APP.RequestType", requestType);
         activity?.SetTag("APP.Request", request);

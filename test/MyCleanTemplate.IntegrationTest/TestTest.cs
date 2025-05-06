@@ -23,7 +23,7 @@ public class TestTest(IntegrationTestWebApplicationFactory applicationFactory)
         var response = await HttpClient.PostAsJsonAsync("/api/test/CreateTest", request);
 
         var activities = OtelTestFramework.CollectedSpans.GetSpans([CheckName!, CheckArgument!]
-                , LogKeywords.TelemetrySpanLevelDb, OtelTestFramework.RunId);
+                , TelemetryHelper.TelemetrySpanLevelRepository, OtelTestFramework.RunId);
         activities.Count.ShouldBe(1);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);

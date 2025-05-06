@@ -17,9 +17,9 @@ namespace MyCleanTemplate.IntegrationTest.Automation
             traceProviderSetup = tpb =>
             {
                 tpb
-                    .ConfigureResource(resource => resource.AddService(LogKeywords.TelemetryServiceName))
+                    .ConfigureResource(resource => resource.AddService(TelemetryHelper.TelemetryServiceName))
                     .AddSource("UnitTests")
-                    .AddSource(TelemetryProperties.MainActivitySource.Name)
+                    .AddSource(TelemetryHelper.MainActivitySource.Name)
                     .AddInMemoryExporter(CollectedSpans)
                     .AddAspNetCoreInstrumentation()
                     .AddProcessor(new TestRunSpanProcessor(RunId.ToString()))

@@ -17,8 +17,7 @@ public static class InfrastructureServiceRegistration
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>((_, options) =>
-            options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
-                .AddInterceptors(new LogDbInterceptor()));
+            options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
 
         services.InjectFromSourceGenerator();
         return services;
