@@ -8,8 +8,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ServiceGenerator;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
+using MyCleanTemplate.API.Errors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,10 +17,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectFromSourceGenerator();
-builder.Logging.AddFilter( b => b > LogLevel.Information).AddOpenTelemetry(logging =>
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Logging.AddOpenTelemetry(logging =>
+builder.Logging.AddFilter(b => b > LogLevel.Information).AddOpenTelemetry(logging =>
 {
     logging.IncludeScopes = true;
     logging.IncludeFormattedMessage = true;
@@ -45,7 +43,7 @@ builder.Services.AddOpenTelemetry()
                 resource.AddService(
                     serviceName: TelemetryHelper.TelemetryServiceName).AddAttributes([new KeyValuePair<string, object>("Machine",Environment.MachineName)
                 ]))
-            .AddEntityFrameworkCoreInstrumentation("SPAAAAAN!!!",a =>
+            .AddEntityFrameworkCoreInstrumentation(a =>
             {
                 a.SetDbStatementForText = true;
                 a.SetDbStatementForStoredProcedure = true;

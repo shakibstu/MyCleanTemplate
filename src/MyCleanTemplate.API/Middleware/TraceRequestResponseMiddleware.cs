@@ -11,7 +11,7 @@ public class LogRequestResponseMiddleware: IMiddleware
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         using var activity =
-            TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApi);
+            TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelApi);
         try
         {
 
