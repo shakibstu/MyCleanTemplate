@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Diagnostics;
+using MediatR;
 using MyCleanTemplate.Domain.Common.Logs;
 using System.Text.Json;
 using ServiceGenerator;
@@ -6,7 +7,7 @@ using ServiceGenerator;
 namespace MyCleanTemplate.Application.Common.Behaviors;
 
 [TransientDependency(typeof(IPipelineBehavior<,>))]
-internal class TracingBehavior<TRequest, TResponse> : 
+internal class TracingBehavior<TRequest, TResponse> :
     IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
@@ -16,18 +17,26 @@ internal class TracingBehavior<TRequest, TResponse> :
         var requestType = LogHelper.GetFullName(request.GetType());
 
         using var activity =
-            TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelApp);
+            TelemetryProperties.MainActivitySource.StartActivity(LogKeywords.TelemetrySpanLevelApp);
+        try
+        {
+            activity?.SetTag("APP.RequestType", requestType);
+            activity?.SetTag("APP.Request", request);
 
-        activity?.SetTag("APP.RequestType", requestType);
-        activity?.SetTag("APP.Request", request);
+            var response = await next(cancellationToken);
 
-        var response = await next(cancellationToken);
-        
-        var responseType = LogHelper.GetFullName(response?.GetType());
+            var responseType = LogHelper.GetFullName(response?.GetType());
 
-        activity?.SetTag("APP.ResponseType", responseType);
-        activity?.SetTag("APP.Response", JsonSerializer.Serialize(response));
+            activity?.SetTag("APP.ResponseType", responseType);
+            activity?.SetTag("APP.Response", JsonSerializer.Serialize(response));
 
-        return response;
+            return response;
+        }
+        catch (Exception e)
+        {
+            activity?.AddException(e);
+            activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+            throw;
+        }
     }
 }
