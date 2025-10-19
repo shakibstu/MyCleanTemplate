@@ -9,11 +9,11 @@ public static class InjectIncrementalDependencies
 {
     public static void InitializeWithLevel(IncrementalGeneratorInitializationContext context, string level)
     {
-        InitializeWithLevelWithoutGeneric(context, level);
-        InitializeGenericWithLevel(context, level);
-        InitializeGenericWithInherit(context, level);
-        InitializeWithInterceptionNonInheritable(context, level);
-        InitializeWithInterceptionInheritable(context, level);
+        InjectSimpleDependenciesForTypesInGenericAttribute(context, level);
+        InjectSimpleDependenciesForTypesInAttribute(context, level);
+        InjectInheritableDependenciesForTypesInGenericAttribute(context, level);
+        InjectSimpleDependenciesWithInterceptionInGenericAttribute(context, level);
+        InjectInheritableDependenciesWithInterceptionInGenericAttribute(context, level);
         InitializeWithInterceptionInheritableInjectInterfaces(context, level);
     }
     private static bool IsClassDeclaration(SyntaxNode node)
@@ -37,7 +37,7 @@ public static class InjectIncrementalDependencies
 
         // Check interfaces of class
         var interfaceAttributes = classSymbol.AllInterfaces.SelectMany(a => a.GetAttributes())
-            .Where(b => GetType(b.AttributeClass!) == attributeName).ToList();
+            .Where(b => GetType(b.AttributeClass!, false) == attributeName).ToList();
 
         if (interfaceAttributes.Any())
         {
@@ -49,7 +49,7 @@ public static class InjectIncrementalDependencies
         while (tmpSymbol != null)
         {
             var attributes = tmpSymbol.GetAttributes()
-                .Where(attr => GetType(attr.AttributeClass!) == attributeName).ToList();
+                .Where(attr => GetType(attr.AttributeClass!,false) == attributeName).ToList();
             if (attributes.Any())
             {
                 types.AddRange(attributes.Select(GetTypeOfParametricAttribute));
@@ -60,7 +60,7 @@ public static class InjectIncrementalDependencies
         return types;
     }
 
-    private static void InitializeGenericWithInherit(IncrementalGeneratorInitializationContext context,
+    private static void InjectInheritableDependenciesForTypesInGenericAttribute(IncrementalGeneratorInitializationContext context,
         string level)
     {
         var template = new StringBuilder(@"
@@ -92,7 +92,7 @@ public static class InjectIncrementalDependencies
 
                 var finalInjections = injections.SelectMany(MergeString);
 
-                return finalInjections.Select(injection => $"services.Add{level}(typeof({injection}),typeof({GetType(classSymbol!)}));");
+                return finalInjections.Select(injection => $"services.Add{level}(typeof({injection}),typeof({GetType(classSymbol!, true)}));");
             }).Collect();
         // Step 3: Check for the parent class attribute
         context.RegisterSourceOutput(classDeclarationsWithSemanticModel, (ctx, injections) =>
@@ -132,7 +132,7 @@ public static class InjectIncrementalDependencies
         }});
     }}";
     }
-    private static void InitializeWithInterceptionNonInheritable(IncrementalGeneratorInitializationContext context, string level)
+    private static void InjectSimpleDependenciesWithInterceptionInGenericAttribute(IncrementalGeneratorInitializationContext context, string level)
     {
         var template = new StringBuilder(@"
                              namespace ServiceGenerator;
@@ -181,14 +181,14 @@ public static class InjectIncrementalDependencies
                 foreach (var injection in injections)
                 {
                     builder.Append(
-                        $"services.{level}InterceptWithTarget(typeof({injection}),typeof({interceptor}),typeof({GetType(info.symbol)}));");
+                        $"services.{level}InterceptWithTarget(typeof({injection}),typeof({interceptor}),typeof({GetType(info.symbol, true)}));");
                     builder.AppendLine();
                 }
 
                 if (!injections.Any())
                 {
                     builder.Append(
-                        $"services.{level}InterceptWithoutTarget(typeof({GetType(info.symbol)}),typeof({interceptor}));");
+                        $"services.{level}InterceptWithoutTarget(typeof({GetType(info.symbol, true)}),typeof({interceptor}));");
                     builder.AppendLine();
                 }
             }
@@ -198,7 +198,7 @@ public static class InjectIncrementalDependencies
         });
     }
 
-    private static void InitializeWithInterceptionInheritable(IncrementalGeneratorInitializationContext context, string level)
+    private static void InjectInheritableDependenciesWithInterceptionInGenericAttribute(IncrementalGeneratorInitializationContext context, string level)
     {
         var template = new StringBuilder(@"
                              namespace ServiceGenerator;
@@ -231,7 +231,7 @@ public static class InjectIncrementalDependencies
                 var injections = InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}InterceptionAttribute<>");
 
                 return injections.SelectMany(injection => injection.types.Select(type =>
-                    $"services.{level}InterceptWithTarget(typeof({type}),typeof({injection.generic}),typeof({GetType(classSymbol!)}));"));
+                    $"services.{level}InterceptWithTarget(typeof({type}),typeof({injection.generic}),typeof({GetType(classSymbol!, true)}));"));
             }).Collect();
         // Step 3: Check for the parent class attribute
         context.RegisterSourceOutput(classDeclarationsWithSemanticModel, (ctx, injections) =>
@@ -272,7 +272,7 @@ public static class InjectIncrementalDependencies
                 var classSymbol = semanticModel.GetDeclaredSymbol(classDeclaration) as INamedTypeSymbol;
                 var injections = InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}InterceptInterfacesAttribute<>");
 
-                return injections.SelectMany(injection => classSymbol.Interfaces.Select(type=> $"services.{level}InterceptWithTarget(typeof({GetType(type)}),typeof({injection.generic}),typeof({GetType(classSymbol!)}));"));
+                return injections.SelectMany(injection => classSymbol.Interfaces.Select(type => $"services.{level}InterceptWithTarget(typeof({GetType(type, true)}),typeof({injection.generic}),typeof({GetType(classSymbol!, true)}));"));
             }).Collect();
         // Step 3: Check for the parent class attribute
         context.RegisterSourceOutput(classDeclarationsWithSemanticModel, (ctx, injections) =>
@@ -282,7 +282,7 @@ public static class InjectIncrementalDependencies
         });
     }
 
-    private static void InitializeWithLevelWithoutGeneric(IncrementalGeneratorInitializationContext context, string level)
+    private static void InjectSimpleDependenciesForTypesInGenericAttribute(IncrementalGeneratorInitializationContext context, string level)
     {
         var template = new StringBuilder(@"
                              namespace ServiceGenerator;
@@ -327,7 +327,7 @@ public static class InjectIncrementalDependencies
                 {
 
                     builder.Append(
-                        $"services.Add{level}(typeof({injection}),typeof({GetType(info.symbol)}));");
+                        $"services.Add{level}(typeof({injection}),typeof({GetType(info.symbol, true)}));");
                     builder.AppendLine();
                 }
             }
@@ -337,12 +337,27 @@ public static class InjectIncrementalDependencies
         });
 
     }
-    private static string GetType(INamedTypeSymbol symbol)
+    private static string GetType(INamedTypeSymbol symbol, bool withSpecificationOfGeneric)
     {
-        return symbol.IsGenericType ? symbol.ConstructUnboundGenericType().ToString() : symbol.OriginalDefinition.ToString();
+        if (!symbol.IsGenericType)
+        {
+            return symbol.OriginalDefinition.ToString();
+        }
+
+        if (!symbol.TypeArguments.Any() || !withSpecificationOfGeneric)
+        {
+            return symbol.ConstructUnboundGenericType().ToString();
+        }
+
+        if (!symbol.TypeArguments.All(a => a.TypeKind is TypeKind.Class or TypeKind.Interface))
+        {
+            return symbol.ConstructUnboundGenericType().ToString();
+        }
+
+        return symbol.ToDisplayString();
     }
 
-    private static void InitializeGenericWithLevel(IncrementalGeneratorInitializationContext context, string level)
+    private static void InjectSimpleDependenciesForTypesInAttribute(IncrementalGeneratorInitializationContext context, string level)
     {
         var template = new StringBuilder(@"
                              namespace ServiceGenerator;
@@ -390,7 +405,7 @@ public static class InjectIncrementalDependencies
                 {
 
                     builder.Append(
-                        $"services.Add{level}(typeof({injection}),typeof({GetType(info.symbol)}));");
+                        $"services.Add{level}(typeof({injection}),typeof({GetType(info.symbol,true)}));");
                     builder.AppendLine();
                 }
             }
