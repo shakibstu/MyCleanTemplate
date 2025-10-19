@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace MyCleanTemplate.Application.Contract.Abstractions.Messaging;
+﻿namespace MyCleanTemplate.Domain.Abstractions.Messaging;
 
 public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand> where TCommand : ICommand
 {

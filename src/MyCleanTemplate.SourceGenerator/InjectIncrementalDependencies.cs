@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 using System.Collections.Immutable;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -15,6 +15,7 @@ public static class InjectIncrementalDependencies
         InjectSimpleDependenciesWithInterceptionInGenericAttribute(context, level);
         InjectInheritableDependenciesWithInterceptionInGenericAttribute(context, level);
         InitializeWithInterceptionInheritableInjectInterfaces(context, level);
+        InjectInheritableWithInterfaces(context, level);
     }
     private static bool IsClassDeclaration(SyntaxNode node)
     {
@@ -240,6 +241,48 @@ public static class InjectIncrementalDependencies
             ctx.AddSource($"{level}.Interceptor.Inheritable.g.cs", injected);
         });
     }
+
+    private static void InjectInheritableWithInterfaces(IncrementalGeneratorInitializationContext context, string level)
+    {
+        var template = new StringBuilder(@"
+                             namespace ServiceGenerator;
+                             using Microsoft.Extensions.DependencyInjection;
+                             using Castle.DynamicProxy;
+                             internal static partial class SourceGeneratorInjectDependencies
+                             {{
+                                 private static partial IServiceCollection InjectInheritable" + level + @"WithInterfaces
+            (this IServiceCollection services)
+                                             {{ 
+                                                {0}
+                                                return services;
+                                             }}
+    }}
+            ");
+        // Step 1: Identify all class declarations
+        var classDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => IsClassDeclaration(node),
+                transform: static (context, _) => GetClassDeclarationSyntax(context));
+
+        // Step 2: Combine syntax and semantic model
+        var classDeclarationsWithSemanticModel = classDeclarations
+            .SelectMany((syntax, _) =>
+            {
+                var semanticModel = syntax.SemanticModel;
+                var classDeclaration = syntax.ClassSyntax;
+                var classSymbol = semanticModel.GetDeclaredSymbol(classDeclaration) as INamedTypeSymbol;
+                var injections = InheritableInjections(semanticModel, classDeclaration, $"ServiceGenerator.Inheritable{level}InterfacesAttribute");
+
+                return injections.SelectMany(_ => classSymbol.Interfaces.Select(type => $"services.Add{level}(typeof({GetType(type, true)}),typeof({GetType(classSymbol!, true)}));"));
+            }).Collect();
+        // Step 3: Check for the parent class attribute
+        context.RegisterSourceOutput(classDeclarationsWithSemanticModel, (ctx, injections) =>
+        {
+            var injected = string.Format(template.ToString(), string.Join("\n", injections));
+            ctx.AddSource($"{level}.AllInterfaces.Inheritable.g.cs", injected);
+        });
+    }
+
 
     private static void InitializeWithInterceptionInheritableInjectInterfaces(IncrementalGeneratorInitializationContext context, string level)
     {

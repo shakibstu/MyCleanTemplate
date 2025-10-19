@@ -119,6 +119,18 @@ public class InjectBasics : IIncrementalGenerator
                                                }
                                            }
                                            
+                                           [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                           internal class InheritableSingletonInterfacesAttribute : Attribute
+                                           {
+                                           }
+                                           [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                           internal class InheritableScopedInterfacesAttribute : Attribute
+                                           {
+                                           }
+                                           [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
+                                           internal class InheritableTransientInterfacesAttribute : Attribute
+                                           {
+                                           }
                                            //###########################
                                            [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
                                            internal class InheritableScopedAttribute<T> : Attribute
@@ -162,7 +174,8 @@ public class InjectBasics : IIncrementalGenerator
                                                .InjectSingletonInheritable().InjectTransientInheritable()
                                                .InjectScopedInterceptionNonInheritable().InjectSingletonInterceptionNonInheritable().InjectTransientInterceptionNonInheritable()
                                                .InjectScopedInterceptionInheritable().InjectSingletonInterceptionInheritable().InjectTransientInterceptionInheritable()
-                                               .InjectInheritableScopedInterceptInterfaces().InjectInheritableSingletonInterceptInterfaces().InjectInheritableTransientInterceptInterfaces();
+                                               .InjectInheritableScopedInterceptInterfaces().InjectInheritableSingletonInterceptInterfaces().InjectInheritableTransientInterceptInterfaces()
+                                               .InjectInheritableScopedWithInterfaces().InjectInheritableSingletonWithInterfaces().InjectInheritableTransientWithInterfaces();
                                                
                                                private static partial IServiceCollection InjectScoped(this IServiceCollection services);
                                                private static partial IServiceCollection InjectSingleton(this IServiceCollection services);
@@ -187,6 +200,10 @@ public class InjectBasics : IIncrementalGenerator
                                                private static partial IServiceCollection InjectInheritableScopedInterceptInterfaces(this IServiceCollection services);
                                                private static partial IServiceCollection InjectInheritableSingletonInterceptInterfaces(this IServiceCollection services);
                                                private static partial IServiceCollection InjectInheritableTransientInterceptInterfaces(this IServiceCollection services);
+                                               
+                                               private static partial IServiceCollection InjectInheritableScopedWithInterfaces(this IServiceCollection services);
+                                               private static partial IServiceCollection InjectInheritableSingletonWithInterfaces(this IServiceCollection services);
+                                               private static partial IServiceCollection InjectInheritableTransientWithInterfaces(this IServiceCollection services);
                                            }
                                            """;
 

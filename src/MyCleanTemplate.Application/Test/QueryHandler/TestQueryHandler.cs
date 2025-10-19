@@ -1,5 +1,5 @@
-﻿using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
-using MyCleanTemplate.Application.Contract.Test.Query;
+﻿using MyCleanTemplate.Application.Contract.Test.Query;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
 using MyCleanTemplate.Domain.Test;
 
 namespace MyCleanTemplate.Application.Test.QueryHandler;

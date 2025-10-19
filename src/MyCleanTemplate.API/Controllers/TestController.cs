@@ -1,8 +1,8 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MyCleanTemplate.API.Models;
 using MyCleanTemplate.Application.Contract.Test.Commands;
 using MyCleanTemplate.Application.Contract.Test.Query;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
 
 namespace MyCleanTemplate.API.Controllers;
 

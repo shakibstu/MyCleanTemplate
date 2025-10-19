@@ -1,6 +1,6 @@
 ﻿
-using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
 using MyCleanTemplate.Domain.Common;
 
 namespace MyCleanTemplate.Infrastructure.Common;
@@ -15,13 +15,14 @@ internal static class MediatorExtensions
             .Select(e => e.Entity)
             .ToList();
 
-        var publishTasks = entities
-            .SelectMany(e => e.DomainEvents)
-            .Select(evt => mediator.Publish(evt));
+        //var publishTasks = entities
+        //    .SelectMany(e => e.DomainEvents)
+        //    .Select(evt => mediator.Publish(evt));
 
-        entities.ForEach(e => e.ClearDomainEvents());
+        //entities.ForEach(e => e.ClearDomainEvents());
 
-        return Task.WhenAll(publishTasks);
+        //return Task.WhenAll(publishTasks);
+        return Task.CompletedTask;
     }
 
 }

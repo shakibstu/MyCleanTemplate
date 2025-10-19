@@ -1,6 +1,5 @@
-﻿using MediatR;
-
-namespace MyCleanTemplate.Application.Contract.Abstractions.Messaging;
+﻿
+namespace MyCleanTemplate.Domain.Abstractions.Messaging;
 
 public interface ICommand : IRequest
 {

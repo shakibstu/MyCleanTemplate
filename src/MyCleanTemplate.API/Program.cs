@@ -9,6 +9,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ServiceGenerator;
 using MyCleanTemplate.API.Errors;
+using MyCleanTemplate.Domain;
+using MyCleanTemplate.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,7 @@ builder.AddServiceDefaults();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().InjectFromSourceGenerator();
+builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().AddDomainServices().InjectFromSourceGenerator();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Logging.AddFilter(b => b > LogLevel.Information).AddOpenTelemetry(logging =>

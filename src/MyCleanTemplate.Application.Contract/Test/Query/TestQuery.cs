@@ -1,4 +1,4 @@
-﻿using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
+﻿using MyCleanTemplate.Domain.Abstractions.Messaging;
 
 namespace MyCleanTemplate.Application.Contract.Test.Query;
 

@@ -19,6 +19,12 @@ internal class GlobalExceptionHandler : IExceptionHandler
             problemDetails.Status = (int)baseException.StatusCode;
             problemDetails.Extensions["errors"] = baseException.Errors;
         }
+        if (exception.InnerException is GlobalBaseException baseInnerException)
+        {
+            problemDetails.Title = baseInnerException.Message;
+            problemDetails.Status = (int)baseInnerException.StatusCode;
+            problemDetails.Extensions["errors"] = baseInnerException.Errors;
+        }
         httpContext.Response.StatusCode = problemDetails.Status.Value;
 
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

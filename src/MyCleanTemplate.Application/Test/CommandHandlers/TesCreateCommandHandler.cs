@@ -1,6 +1,5 @@
-using MediatR;
-using MyCleanTemplate.Application.Contract.Abstractions.Messaging;
 using MyCleanTemplate.Application.Contract.Test.Commands;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
 using MyCleanTemplate.Domain.Exceptions.Base;
 using MyCleanTemplate.Domain.Test;
 

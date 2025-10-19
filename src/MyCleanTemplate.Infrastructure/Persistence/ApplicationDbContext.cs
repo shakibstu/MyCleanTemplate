@@ -1,10 +1,10 @@
 ﻿using System.Data;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Common;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Storage;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
 using ServiceGenerator;
 
 namespace MyCleanTemplate.Infrastructure.Persistence;
