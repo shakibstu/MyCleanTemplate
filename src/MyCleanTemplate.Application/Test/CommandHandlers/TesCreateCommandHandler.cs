@@ -10,6 +10,6 @@ public class TesCreateCommandHandler(ITestRepository testRepository) : ICommandH
     public async Task Handle(CreateTestCommand request, CancellationToken cancellationToken)
     {
         await testRepository.CreateTest(request.Name);
-        throw new ForbiddenException("Test Exception", new Dictionary<string, string[]> { { "test", ["1","2"] } });
+        //throw new ForbiddenException("Test Exception", new Dictionary<string, string[]> { { "test", ["1","2"] } });
     }
 }

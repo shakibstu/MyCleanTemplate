@@ -6,25 +6,24 @@ using PracticalOtel.xUnit.v3.OpenTelemetry;
 using Xunit.v3;
 
 [assembly: TestPipelineStartup(typeof(OtelTestFramework))]
-namespace MyCleanTemplate.IntegrationTest.Automation
+namespace MyCleanTemplate.IntegrationTest.Automation;
+
+public class OtelTestFramework : TracedPipelineStartup
 {
-    public class OtelTestFramework : TracedPipelineStartup
+    public static readonly InMemoryTestSpans CollectedSpans = [];
+    public static readonly Guid RunId = Guid.NewGuid();
+    public OtelTestFramework() 
     {
-        public static readonly InMemoryTestSpans CollectedSpans = [];
-        public static readonly Guid RunId = Guid.NewGuid();
-        public OtelTestFramework() 
+        traceProviderSetup = tpb =>
         {
-            traceProviderSetup = tpb =>
-            {
-                tpb
-                    .ConfigureResource(resource => resource.AddService(TelemetryHelper.TelemetryServiceName))
-                    .AddSource("UnitTests")
-                    .AddSource(TelemetryHelper.MainActivitySource.Name)
-                    .AddInMemoryExporter(CollectedSpans)
-                    .AddAspNetCoreInstrumentation()
-                    .AddProcessor(new TestRunSpanProcessor(RunId.ToString()))
-                    .AddOtlpExporter();
-            };
-        }
+            tpb
+                .ConfigureResource(resource => resource.AddService(TelemetryHelper.TelemetryServiceName))
+                .AddSource("UnitTests")
+                .AddSource(TelemetryHelper.MainActivitySource.Name)
+                .AddInMemoryExporter(CollectedSpans)
+                .AddAspNetCoreInstrumentation()
+                .AddProcessor(new TestRunSpanProcessor(RunId.ToString()))
+                .AddOtlpExporter();
+        };
     }
 }

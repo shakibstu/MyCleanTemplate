@@ -1,0 +1,15 @@
+﻿using Microsoft.Extensions.Logging;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
+using MyCleanTemplate.Domain.Events;
+
+namespace MyCleanTemplate.Application.Test.NotificationHandler
+{
+    internal class TestAddedEventNotificationHandler(ILogger<TestAddedEventNotificationHandler> logger) : INotificationHandler<TestAddedEvent>
+    {
+        public Task Handle(TestAddedEvent notification, CancellationToken cancellationToken)
+        {
+            logger.LogError("SALAM!!");
+            return Task.CompletedTask;
+        }
+    }
+}

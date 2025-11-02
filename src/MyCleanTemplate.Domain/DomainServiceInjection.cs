@@ -1,16 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
-using MyCleanTemplate.Domain.Common.Messaging;
 using ServiceGenerator;
 
-namespace MyCleanTemplate.Domain
+namespace MyCleanTemplate.Domain;
+
+public static class DomainServiceInjection
 {
-    public static class DomainServiceInjection
+    public static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
-        public static IServiceCollection AddDomainServices(this IServiceCollection services)
-        {
-            services.AddScoped<IMediator,Mediator>().InjectFromSourceGenerator();
-            return services;
-        }
+        services.InjectFromSourceGenerator();
+        return services;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyCleanTemplate.Domain.Enums;
+using MyCleanTemplate.Domain.Events;
 using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Common;
 using MyCleanTemplate.Infrastructure.Persistence;
@@ -27,6 +28,7 @@ internal class TestRepository(ApplicationDbContext context) : BaseRepository<Tes
             var vo = TestValueObject.Create("st1", "city", "state", "country", "123");
             var testEntity = TestEntity.Create(Guid.NewGuid(), name, vo, vo, new List<TestValueObject> { vo }, TestEnum.Test0);
             await Add(testEntity);
+            testEntity.AddDomainEvent(new TestAddedEvent(testEntity));
             await _context.CommitTransactionAsync(_context.GetCurrentTransaction());
             return testEntity.Id;
         }

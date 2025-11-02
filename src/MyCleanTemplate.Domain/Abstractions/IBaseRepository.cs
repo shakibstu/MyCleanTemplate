@@ -16,6 +16,4 @@ public interface IBaseRepository<T> : IRepository where T : BaseEntity
     Task Delete(Guid id, bool autoSave = false);
 }
 
-public interface IRepository
-{
-}
+public interface IRepository;

@@ -82,6 +82,6 @@ await app.RunAsync();
 
 namespace MyCleanTemplate.API
 {
-    public partial class Program { }
+    public partial class Program;
 
 }

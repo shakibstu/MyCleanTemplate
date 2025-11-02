@@ -10,7 +10,7 @@ internal class LogRepositoryInterceptor : IInterceptor
     public void Intercept(IInvocation invocation)
     {
         var arguments = invocation.Arguments;
-        
+
         using var activity =
             TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelRepository);
         try
@@ -22,7 +22,7 @@ internal class LogRepositoryInterceptor : IInterceptor
             var valueResponse = invocation.ReturnValue?.GetType().GetProperties().First(a => a.Name == "Result")
                 .GetValue(invocation.ReturnValue, null);
 
-            activity?.SetTag("Repository.Response", JsonSerializer.Serialize(valueResponse));
+            activity?.SetTag("Repository.Response", JsonSerializer.Serialize(valueResponse, valueResponse?.GetType() ?? typeof(object)));
         }
         catch (TargetInvocationException tex)
         {

@@ -16,7 +16,7 @@ public class TestController(IMediator mediator, ILogger<TestController> logger) 
         using (logger.BeginScope("Processing this {name}", request.Name))
         {
             logger.LogError("LOG TEST!!");
-            await mediator.Send(new CreateTestCommand(request.Name));
+            await mediator.Send(new CreateTestCommand{ Name = request.Name});
             return Ok();
         }
     }

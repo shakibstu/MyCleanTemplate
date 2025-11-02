@@ -2,6 +2,4 @@
 
 namespace MyCleanTemplate.Application.Contract.Test.Query;
 
-public class TestQuery : IQuery<object>
-{
-}
+public class TestQuery : IQuery<object>;

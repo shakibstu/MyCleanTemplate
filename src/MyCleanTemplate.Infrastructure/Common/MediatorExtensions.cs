@@ -7,7 +7,7 @@ namespace MyCleanTemplate.Infrastructure.Common;
 
 internal static class MediatorExtensions
 {
-    public static Task DispatchDomainEvents(this IMediator mediator, DbContext context)
+    public static async Task DispatchDomainEvents(this IMediator mediator, DbContext context)
     {
         var entities = context.ChangeTracker
             .Entries<BaseEntity>()
@@ -15,14 +15,11 @@ internal static class MediatorExtensions
             .Select(e => e.Entity)
             .ToList();
 
-        //var publishTasks = entities
-        //    .SelectMany(e => e.DomainEvents)
-        //    .Select(evt => mediator.Publish(evt));
-
-        //entities.ForEach(e => e.ClearDomainEvents());
-
-        //return Task.WhenAll(publishTasks);
-        return Task.CompletedTask;
+        var publishTasks = entities
+            .SelectMany(e => e.DomainEvents)
+            .Select(evt => mediator.Publish(evt));
+        await Task.WhenAll(publishTasks);
+        entities.ForEach(e => e.ClearDomainEvents());
     }
 
 }
