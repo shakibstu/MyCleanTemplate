@@ -1,5 +1,5 @@
 ﻿
-using Azure.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyCleanTemplate.Domain.Abstractions.Messaging;
 using MyCleanTemplate.Domain.Common.Logs;
@@ -8,6 +8,7 @@ using OpenTelemetry.Context.Propagation;
 using ServiceGenerator;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Threading;
 
 namespace MyCleanTemplate.Infrastructure.Messaging
 {
@@ -26,50 +27,40 @@ namespace MyCleanTemplate.Infrastructure.Messaging
                 {
                     var notificationHandlerType = typeof(INotificationHandler<>).MakeGenericType(enumerator.Current.Type);
                     var handler = serviceProvider.GetService(notificationHandlerType);
-                    if (handler is not null)
-                    {
-                        await ConsumeAndTelemetry(enumerator.Current, handler, stoppingToken);
-                    }
+
+                    var behaviorType = typeof(INotificationHandlerBehavior<>).MakeGenericType(enumerator.Current.Type);
+                    var behaviors = serviceProvider.GetServices(behaviorType);
+                    var response = behaviors.Reverse()
+                        .Aggregate(() => ConsumeAndTelemetry(enumerator.Current, handler, stoppingToken),
+                            (next, behavior) => () =>
+                                (Task)behavior.GetType()
+                                    .GetMethod(nameof(INotificationHandlerBehavior<INotification>.Handle))!
+                                    .Invoke(behavior, [enumerator.Current.Message, next, stoppingToken])).Invoke();
+                    await response;
                 }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(100), stoppingToken);
             }
-
         }
 
-        private async Task ConsumeAndTelemetry(NotificationPublishContext context,object handler, CancellationToken stoppingToken)
+        private async Task ConsumeAndTelemetry(NotificationPublishContext context, object handler, CancellationToken stoppingToken)
         {
-            var parentContext = Propagators.DefaultTextMapPropagator.Extract(default, context.Properties,
-                (properties, key) =>
-                {
-                    if (properties.TryGetValue(key, out var value))
-                    {
-                        return [value];
-                    }
-
-                    return [];
-                });
-            Baggage.Current = parentContext.Baggage;
-            using var activity = TelemetryHelper.MainActivitySource.StartActivity(
-                TelemetryHelper.TelemetrySpanLevelMediator, ActivityKind.Consumer, parentContext.ActivityContext);
             try
             {
-                activity?.SetTag("Mediator.Action.Type", "Consumer");
-                activity?.SetTag("Mediator.Notification.Type", context.Type.ToString());
-                activity?.SetTag("Mediator.Notification.Value", JsonSerializer.Serialize(context.Message, context.Type));
                 await ((Task)handler!.GetType().GetMethod(HandlerName)!.Invoke(handler, [context.Message, stoppingToken]))!;
             }
             catch (Exception e)
             {
-                activity?.AddException(e);
-                activity?.SetStatus(ActivityStatusCode.Error, e.Message);
-                notificationChannel.AddToChannel(context.Message,activity, stoppingToken);
+                notificationChannel.AddToChannel(context.Message, stoppingToken);
                 await Task.Delay(TimeSpan.FromMilliseconds(100), stoppingToken);
             }
         }
         public override async Task StopAsync(CancellationToken stoppingToken)
         {
-
+            while (notificationChannel.Count > 0)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(100), stoppingToken);
+            }
             await base.StopAsync(stoppingToken);
         }
     }

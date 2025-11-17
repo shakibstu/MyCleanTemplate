@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Azure.Core;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions.Messaging;
 using MyCleanTemplate.Domain.Common.Logs;
@@ -7,6 +8,8 @@ using ServiceGenerator;
 using System.Diagnostics;
 using System.Text.Json;
 using ValidationException = MyCleanTemplate.Domain.Exceptions.ValidationException;
+using Void = MyCleanTemplate.Domain.Abstractions.Messaging.Void;
+
 namespace MyCleanTemplate.Infrastructure.Messaging;
 
 [TransientDependency<IMediator>]
@@ -31,6 +34,7 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
                 new Dictionary<string, string[]>());
         }
         var handler = serviceProvider.GetRequiredService(handlerType);
+
         const string handleName = nameof(IRequestHandler<IRequest>.Handle);
         return await ((Task<TResponse>)handler.GetType().GetMethod(handleName)!.Invoke(
             handler, [request, cancellationToken]))!;
@@ -55,9 +59,9 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
         await ((IRequestHandler<TRequest>)handler).Handle(request, cancellationToken);
     }
 
-    private void PublishToChannel<TNotification>(TNotification notification, Activity activity, CancellationToken cancellationToken = default) where TNotification : INotification
+    private void PublishToChannel<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : INotification
     {
-        serviceProvider.GetRequiredService<NotificationChannel>().AddToChannel(notification,activity, cancellationToken);
+        serviceProvider.GetRequiredService<NotificationChannel>().AddToChannel(notification, cancellationToken);
     }
 
     private async Task Validate(Type requestType, object request, CancellationToken cancellationToken)
@@ -115,37 +119,62 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
 
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelMediator);
-        var response = await HandleAndTelemetry(() => SendWithResponse(request, cancellationToken), request, MediatorActionType.RequestWithResponse, activity);
-        return response;
+
+        return await Execute(request, () => SendWithResponse(request, cancellationToken), MediatorActionType.RequestWithResponse, cancellationToken);
+
+        //using var activity = TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelMediator);
+        //var response = await HandleAndTelemetry(() => SendWithResponse(request, cancellationToken), request, MediatorActionType.RequestWithResponse, activity);
+    }
+
+    private async Task<TResponse> Execute<TRequest,TResponse>(TRequest request,Func<Task<TResponse>> handler, MediatorActionType actionType, CancellationToken cancellationToken = default)
+    {
+        var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(request.GetType(), typeof(TResponse));
+        var behaviors = serviceProvider.GetServices(behaviorType);
+
+        var response = behaviors.Reverse()
+            .Aggregate(handler,
+                (next, behavior) => () =>
+                    (Task<TResponse>)behavior.GetType()
+                        .GetMethod(nameof(IPipelineBehavior<IRequest<TResponse>, TResponse>.Handle))!
+                        .Invoke(behavior, [request, next,actionType, cancellationToken])).Invoke();
+        return await response;
+    }
+    private async Task ExecuteNotification<TRequest>(TRequest request, Func<Task> handler, CancellationToken cancellationToken = default)
+    {
+        var behaviorType = typeof(INotificationBehavior<>).MakeGenericType(request.GetType());
+        var behaviors = serviceProvider.GetServices(behaviorType);
+
+        var response = behaviors.Reverse()
+            .Aggregate(handler,
+                (next, behavior) => () =>
+                    (Task)behavior.GetType()
+                        .GetMethod(nameof(INotificationBehavior<INotification>.Handle))!
+                        .Invoke(behavior, [request, next, cancellationToken])).Invoke();
+        await response;
     }
 
     public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
     {
-        using var activity = TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelMediator);
-        await HandleAndTelemetry(InternalSend, request,
-            request is ICommand ? MediatorActionType.Command : MediatorActionType.Request, activity);
+        await Execute(request, InternalSend, request is ICommand ? MediatorActionType.Command : MediatorActionType.Request, cancellationToken);
         return;
 
-        async Task<string> InternalSend()
+        async Task<Void> InternalSend()
         {
             await SendWithoutResponse(request, cancellationToken);
-            return "No Response";
+            return new Void();
         }
     }
 
-    public async Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : INotification
+    public async Task Publish<TNotification>(TNotification notification,
+        CancellationToken cancellationToken = default) where TNotification : INotification
     {
-        using var activity =
-            TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelMediator,
-                ActivityKind.Producer);
-        await HandleAndTelemetry(InternalPublish, notification, MediatorActionType.Notification, activity);
+        await ExecuteNotification(notification, InternalPublish, cancellationToken);
         return;
-
-        Task<string> InternalPublish()
+        
+        Task InternalPublish()
         {
-            PublishToChannel(notification, activity, cancellationToken);
-            return Task.FromResult("No Response");
+            PublishToChannel(notification, cancellationToken);
+            return Task.FromResult(new Void());
         }
 
     }

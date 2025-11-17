@@ -3,4 +3,4 @@ using MyCleanTemplate.Domain.Abstractions.Messaging;
 
 namespace MyCleanTemplate.Infrastructure.Messaging;
 
-internal record NotificationPublishContext(INotification Message, Type Type, Dictionary<string,string> Properties);
+internal record NotificationPublishContext(INotification Message, Type Type);

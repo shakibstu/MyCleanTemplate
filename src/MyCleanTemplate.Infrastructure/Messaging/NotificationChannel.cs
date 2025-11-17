@@ -1,9 +1,5 @@
-﻿using Microsoft.Identity.Client;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
-using OpenTelemetry;
-using OpenTelemetry.Context.Propagation;
+﻿using MyCleanTemplate.Domain.Abstractions.Messaging;
 using ServiceGenerator;
-using System.Diagnostics;
 using System.Threading.Channels;
 
 namespace MyCleanTemplate.Infrastructure.Messaging;
@@ -13,19 +9,11 @@ internal class NotificationChannel : IDisposable
 {
     private readonly Channel<NotificationPublishContext> _channel = Channel.CreateUnbounded<NotificationPublishContext>();
 
-    public bool AddToChannel<T>(T notification,Activity activity, CancellationToken cancellationToken) where T : INotification
+    public bool AddToChannel<T>(T notification, CancellationToken cancellationToken) where T : INotification
     {
         if (!cancellationToken.IsCancellationRequested)
         {
-            var properties = new Dictionary<string, string>();
-            var propagationContext = new PropagationContext(
-                activity?.Context ?? default,
-                Baggage.Current);
-            Propagators.DefaultTextMapPropagator.Inject(propagationContext, properties, (dictionary, key, value) =>
-            {
-                dictionary[key] = value;
-            });
-            return _channel.Writer.TryWrite(new NotificationPublishContext(notification, notification.GetType(), properties));
+            return _channel.Writer.TryWrite(new NotificationPublishContext(notification, notification.GetType()));
 
         }
         _channel.Writer.Complete();
@@ -35,6 +23,8 @@ internal class NotificationChannel : IDisposable
     {
         return _channel.Reader.ReadAllAsync(cancellationToken);
     }
+    public int Count => _channel.Reader.Count;
+
     public void Dispose()
     {
         _channel.Writer.Complete();
