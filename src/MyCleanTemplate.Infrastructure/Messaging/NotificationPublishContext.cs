@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
+﻿using MyCleanTemplate.Domain.Abstractions.Messaging;
 
 namespace MyCleanTemplate.Infrastructure.Messaging;
 

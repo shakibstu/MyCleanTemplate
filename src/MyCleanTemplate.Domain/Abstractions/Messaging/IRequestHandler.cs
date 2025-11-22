@@ -8,7 +8,6 @@ namespace MyCleanTemplate.Domain.Abstractions.Messaging;
 /// </summary>
 /// <typeparam name="TRequest">The type of request being handled</typeparam>
 /// <typeparam name="TResponse">The type of response from the handler</typeparam>
-[InheritableTransientInterfaces]
 public interface IRequestHandler<in TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
@@ -25,7 +24,6 @@ public interface IRequestHandler<in TRequest, TResponse>
 /// Defines a handler for a request with a void response.
 /// </summary>
 /// <typeparam name="TRequest">The type of request being handled</typeparam>
-[InheritableTransientInterfaces]
 public interface IRequestHandler<in TRequest>
     where TRequest : IRequest
 {

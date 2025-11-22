@@ -1,13 +1,7 @@
-﻿using Azure.Core;
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions.Messaging;
-using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Domain.Exceptions.Base;
 using ServiceGenerator;
-using System.Diagnostics;
-using System.Text.Json;
-using ValidationException = MyCleanTemplate.Domain.Exceptions.ValidationException;
 using Void = MyCleanTemplate.Domain.Abstractions.Messaging.Void;
 
 namespace MyCleanTemplate.Infrastructure.Messaging;
@@ -17,16 +11,7 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
 {
     private async Task<TResponse> SendWithResponse<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-        Type handlerType = null;
-        await Validate(request.GetType(), request, cancellationToken);
-        if (request.GetType().IsAssignableTo(typeof(IQuery<TResponse>)))
-        {
-            handlerType = typeof(IQueryHandler<,>).MakeGenericType(request.GetType(), typeof(TResponse));
-        }
-        else if (request.GetType().IsAssignableTo(typeof(ICommand<TResponse>)))
-        {
-            handlerType = typeof(ICommandHandler<,>).MakeGenericType(request.GetType(), typeof(TResponse));
-        }
+        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(request.GetType(), typeof(TResponse));
 
         if (handlerType == null)
         {
@@ -42,13 +27,7 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
 
     private async Task SendWithoutResponse<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
     {
-        await Validate(request.GetType(), request, cancellationToken);
-
-        var handlerType = request is ICommand
-            ? typeof(ICommandHandler<>).MakeGenericType(request.GetType())
-            : typeof(IRequestHandler<TRequest>);
-
-        var handler = serviceProvider.GetService(handlerType);
+        var handler = serviceProvider.GetService<IRequestHandler<TRequest>>();
 
         if (handler == null)
         {
@@ -56,7 +35,7 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
                 new Dictionary<string, string[]>());
         }
 
-        await ((IRequestHandler<TRequest>)handler).Handle(request, cancellationToken);
+        await handler.Handle(request, cancellationToken);
     }
 
     private void PublishToChannel<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : INotification
@@ -64,69 +43,12 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
         serviceProvider.GetRequiredService<NotificationChannel>().AddToChannel(notification, cancellationToken);
     }
 
-    private async Task Validate(Type requestType, object request, CancellationToken cancellationToken)
-    {
-        var validatorType = typeof(IValidator<>).MakeGenericType(requestType);
-        var validators = serviceProvider.GetServices(validatorType)
-            .Cast<IValidator>()
-            .ToArray();
-        if (!validators.Any()) return;
-        var validationContextType = typeof(ValidationContext<>).MakeGenericType(requestType);
-        var validationContext = (IValidationContext)Activator.CreateInstance(validationContextType, request);
-
-        var validationResults = await Task.WhenAll(validators.Select(a => a.ValidateAsync(validationContext, cancellationToken)));
-
-        var errorsDictionary = validationResults
-            .SelectMany(x => x.Errors)
-            .Where(x => x != null)
-            .GroupBy(
-                x => x.PropertyName,
-                x => x.ErrorMessage,
-                (propertyName, errorMessages) => new
-                {
-                    Key = propertyName,
-                    Values = errorMessages.Distinct().ToArray()
-                })
-            .ToDictionary(x => x.Key, x => x.Values);
-        if (errorsDictionary.Any())
-        {
-            throw new ValidationException("Validation Failed!", errorsDictionary);
-        }
-    }
-
-    private static async Task<TResponse> HandleAndTelemetry<TResponse>(Func<Task<TResponse>> handler, IBaseRequest request, MediatorActionType actionType,Activity activity)
-    {
-        try
-        {
-            activity?.SetTag("Mediator.Action.Type", Enum.GetName(actionType));
-            activity?.SetTag("Mediator.Request.Type", request.GetType().ToString());
-            activity?.SetTag("Mediator.Request.Value", JsonSerializer.Serialize(request, request.GetType()));
-
-            var response = await handler.Invoke();
-
-            activity?.SetTag("Mediator.Response.Type", response.GetType().ToString());
-            activity?.SetTag("Mediator.Response.Value", JsonSerializer.Serialize(response, response.GetType()));
-
-            return response;
-        }
-        catch (Exception e)
-        {
-            activity?.AddException(e);
-            activity?.SetStatus(ActivityStatusCode.Error, e.Message);
-            throw;
-        }
-    }
-
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-
         return await Execute(request, () => SendWithResponse(request, cancellationToken), MediatorActionType.RequestWithResponse, cancellationToken);
-
-        //using var activity = TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelMediator);
-        //var response = await HandleAndTelemetry(() => SendWithResponse(request, cancellationToken), request, MediatorActionType.RequestWithResponse, activity);
     }
 
-    private async Task<TResponse> Execute<TRequest,TResponse>(TRequest request,Func<Task<TResponse>> handler, MediatorActionType actionType, CancellationToken cancellationToken = default)
+    private async Task<TResponse> Execute<TRequest, TResponse>(TRequest request, Func<Task<TResponse>> handler, MediatorActionType actionType, CancellationToken cancellationToken = default)
     {
         var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(request.GetType(), typeof(TResponse));
         var behaviors = serviceProvider.GetServices(behaviorType);
@@ -136,7 +58,7 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
                 (next, behavior) => () =>
                     (Task<TResponse>)behavior.GetType()
                         .GetMethod(nameof(IPipelineBehavior<IRequest<TResponse>, TResponse>.Handle))!
-                        .Invoke(behavior, [request, next,actionType, cancellationToken])).Invoke();
+                        .Invoke(behavior, [request, next, actionType, cancellationToken])).Invoke();
         return await response;
     }
     private async Task ExecuteNotification<TRequest>(TRequest request, Func<Task> handler, CancellationToken cancellationToken = default)
@@ -170,7 +92,7 @@ internal class Mediator(IServiceProvider serviceProvider) : IMediator
     {
         await ExecuteNotification(notification, InternalPublish, cancellationToken);
         return;
-        
+
         Task InternalPublish()
         {
             PublishToChannel(notification, cancellationToken);
