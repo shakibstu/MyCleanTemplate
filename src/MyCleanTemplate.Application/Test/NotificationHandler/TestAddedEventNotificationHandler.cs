@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
+﻿using MediatRR.Contract.Messaging;
+using Microsoft.Extensions.Logging;
 using MyCleanTemplate.Domain.Events;
+using ServiceGenerator;
 
 namespace MyCleanTemplate.Application.Test.NotificationHandler
 {

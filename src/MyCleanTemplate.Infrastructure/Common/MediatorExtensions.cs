@@ -1,6 +1,6 @@
 ﻿
+using MediatRR;
 using Microsoft.EntityFrameworkCore;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
 using MyCleanTemplate.Domain.Common;
 
 namespace MyCleanTemplate.Infrastructure.Common;

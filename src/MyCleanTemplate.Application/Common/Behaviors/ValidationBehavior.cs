@@ -1,5 +1,6 @@
 
 using FluentValidation;
+using MediatRR.Contract.Messaging;
 using MyCleanTemplate.Domain.Abstractions.Messaging;
 using ServiceGenerator;
 using ValidationException = MyCleanTemplate.Domain.Exceptions.ValidationException;
@@ -11,7 +12,7 @@ internal class ValidationBehavior<TRequest, TResponse>
     (IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    public async Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next, MediatorActionType actionType, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next, CancellationToken cancellationToken)
     {
         if (!validators.Any()) return await next();
         var context = new ValidationContext<TRequest>(request);

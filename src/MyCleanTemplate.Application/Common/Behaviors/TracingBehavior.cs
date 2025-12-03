@@ -5,6 +5,7 @@ using OpenTelemetry.Context.Propagation;
 using ServiceGenerator;
 using System.Diagnostics;
 using System.Text.Json;
+using MediatRR.Contract.Messaging;
 using MyCleanTemplate.Domain.Common;
 
 namespace MyCleanTemplate.Application.Common.Behaviors;
@@ -14,12 +15,12 @@ internal class RequestTracingBehavior<TRequest, TResponse> :
     IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    public async Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next, MediatorActionType actionType, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next, CancellationToken cancellationToken)
     {
         using var activity = TelemetryHelper.MainActivitySource.StartActivity(TelemetryHelper.TelemetrySpanLevelMediator);
         try
         {
-            activity?.SetTag("Mediator.Action.Type", Enum.GetName(actionType));
+            activity?.SetTag("Mediator.Action.Type", ActionType(request));
             activity?.SetTag("Mediator.Request.Type", request.GetType().ToString());
             activity?.SetTag("Mediator.Request.Value", JsonSerializer.Serialize(request, request.GetType()));
 
@@ -37,6 +38,13 @@ internal class RequestTracingBehavior<TRequest, TResponse> :
             throw;
         }
     }
+    private static MediatorActionType ActionType<TRequest>(TRequest request) => request switch
+    {
+        _ when request is ICommand<TResponse> => MediatorActionType.CommandWithResponse,
+        _ when request is IQuery<TResponse> => MediatorActionType.RequestWithResponse,
+        _ when request is ICommand => MediatorActionType.Command,
+        _ => MediatorActionType.Request
+    };
 }
 
 [TransientDependency(typeof(INotificationBehavior<>))]

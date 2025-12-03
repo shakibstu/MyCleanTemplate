@@ -1,3 +1,4 @@
+using MediatRR;
 using Microsoft.AspNetCore.Mvc;
 using MyCleanTemplate.API.Models;
 using MyCleanTemplate.Application.Contract.Test.Commands;

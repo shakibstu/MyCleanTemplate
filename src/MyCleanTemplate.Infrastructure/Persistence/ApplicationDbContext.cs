@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Common;
 using System.Reflection;
+using MediatRR;
 using Microsoft.EntityFrameworkCore.Storage;
 using MyCleanTemplate.Domain.Abstractions.Messaging;
 using ServiceGenerator;

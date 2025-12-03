@@ -1,6 +1,5 @@
 ﻿
-using MyCleanTemplate.Domain.Abstractions.Messaging;
-
+using MediatRR.Contract.Messaging;
 namespace MyCleanTemplate.Domain.Common;
 
 public abstract class BaseEvent : INotification

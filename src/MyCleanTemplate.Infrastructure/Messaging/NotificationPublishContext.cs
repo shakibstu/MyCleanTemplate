@@ -1,4 +1,5 @@
-﻿using MyCleanTemplate.Domain.Abstractions.Messaging;
+﻿using MediatRR.Contract.Messaging;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
 
 namespace MyCleanTemplate.Infrastructure.Messaging;
 
