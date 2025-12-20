@@ -26,11 +26,7 @@ builder.Logging.AddFilter(b => b > LogLevel.Information).AddOpenTelemetry(loggin
     logging.IncludeScopes = true;
     logging.IncludeFormattedMessage = true;
     logging.ParseStateValues = true;
-    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TelemetryHelper.TelemetryServiceName)).AddOtlpExporter().AddOtlpExporter(a =>
-    {
-        a.Endpoint = new Uri("http://localhost:4317");
-        a.Protocol = OtlpExportProtocol.Grpc;
-    });
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TelemetryHelper.TelemetryServiceName)).AddOtlpExporter();
 });
 
 builder.Services.AddOpenTelemetry()
@@ -51,11 +47,6 @@ builder.Services.AddOpenTelemetry()
                 ]))
             .AddEntityFrameworkCoreInstrumentation()
             .AddOtlpExporter()
-            .AddOtlpExporter(a =>
-            {
-                a.Endpoint = new Uri("http://localhost:4317");
-                a.Protocol = OtlpExportProtocol.Grpc;
-            })
             //.AddAspNetCoreInstrumentation()
             //.AddHttpClientInstrumentation()
             //.AddConsoleExporter()
