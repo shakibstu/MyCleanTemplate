@@ -5,7 +5,6 @@ using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
 using System.Linq.Expressions;
 using ServiceGenerator;
-
 namespace MyCleanTemplate.Infrastructure.Common;
 
 [InheritableTransientInterceptInterfaces<LogRepositoryInterceptor>]
@@ -36,7 +35,7 @@ internal abstract class BaseRepository<T>(ApplicationDbContext context) : IBaseR
 
     public virtual async Task Add(T entity, bool autoSave = false)
     {
-        _dbSet.Add(entity); 
+        _dbSet.Add(entity);
         if (autoSave)
         {
             await context.SaveChangesAsync();
@@ -46,7 +45,7 @@ internal abstract class BaseRepository<T>(ApplicationDbContext context) : IBaseR
     public virtual async Task Update(T entity, bool autoSave = false)
     {
         _dbSet.Attach(entity);
-        context.Entry(entity).State = EntityState.Modified; 
+        context.Entry(entity).State = EntityState.Modified;
         if (autoSave)
         {
             await context.SaveChangesAsync();

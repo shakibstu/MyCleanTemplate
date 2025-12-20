@@ -1,13 +1,11 @@
-﻿using System.Data;
+﻿using MediatRR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using MyCleanTemplate.Domain.Abstractions;
 using MyCleanTemplate.Infrastructure.Common;
+using System.Data;
 using System.Reflection;
-using MediatRR;
-using Microsoft.EntityFrameworkCore.Storage;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
 using ServiceGenerator;
-
 namespace MyCleanTemplate.Infrastructure.Persistence;
 [ScopedDependency<IUnitOfWork>]
 public partial class ApplicationDbContext(IMediator mediator, DbContextOptions<ApplicationDbContext> options)

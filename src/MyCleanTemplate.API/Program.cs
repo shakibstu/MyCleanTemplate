@@ -1,17 +1,17 @@
+using MyCleanTemplate.API.Errors;
 using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
+using MyCleanTemplate.Domain;
 using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
+using MyCleanTemplate.ServiceDefaults;
 using OpenTelemetry;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ServiceGenerator;
-using MyCleanTemplate.API.Errors;
-using MyCleanTemplate.Domain;
-using MyCleanTemplate.ServiceDefaults;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -26,7 +26,11 @@ builder.Logging.AddFilter(b => b > LogLevel.Information).AddOpenTelemetry(loggin
     logging.IncludeScopes = true;
     logging.IncludeFormattedMessage = true;
     logging.ParseStateValues = true;
-    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TelemetryHelper.TelemetryServiceName)).AddOtlpExporter();
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TelemetryHelper.TelemetryServiceName)).AddOtlpExporter().AddOtlpExporter(a =>
+    {
+        a.Endpoint = new Uri("http://localhost:4317");
+        a.Protocol = OtlpExportProtocol.Grpc;
+    });
 });
 
 builder.Services.AddOpenTelemetry()
@@ -45,12 +49,13 @@ builder.Services.AddOpenTelemetry()
                 resource.AddService(
                     serviceName: TelemetryHelper.TelemetryServiceName).AddAttributes([new KeyValuePair<string, object>("Machine",Environment.MachineName)
                 ]))
-            .AddEntityFrameworkCoreInstrumentation(a =>
-            {
-                a.SetDbStatementForText = true;
-                a.SetDbStatementForStoredProcedure = true;
-            })
+            .AddEntityFrameworkCoreInstrumentation()
             .AddOtlpExporter()
+            .AddOtlpExporter(a =>
+            {
+                a.Endpoint = new Uri("http://localhost:4317");
+                a.Protocol = OtlpExportProtocol.Grpc;
+            })
             //.AddAspNetCoreInstrumentation()
             //.AddHttpClientInstrumentation()
             //.AddConsoleExporter()

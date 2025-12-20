@@ -38,7 +38,7 @@ public class InMemoryTestSpans : ICollection<Activity>
 
     public bool IsReadOnly => false;
 
-    public List<Activity> GetSpans(List<Func<Dictionary<string,object?>,bool>> checkups, string displayName, Guid runId)
+    public List<Activity> GetSpans(List<Func<Dictionary<string, object?>, bool>> checkups, string displayName, Guid runId)
     {
         return _spans.SelectMany(a => a.Value)
             .Where(a => a.TagObjects.Any(b => b.Value?.ToString() == runId.ToString()))

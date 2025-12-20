@@ -1,8 +1,6 @@
 ﻿using MyCleanTemplate.Domain.Abstractions;
-using MyCleanTemplate.Domain.Enums;
 using MyCleanTemplate.Domain.Test;
 using ServiceGenerator;
-
 namespace MyCleanTemplate.Infrastructure.Tests;
 
 [TransientDependency<IDataSeeder>]

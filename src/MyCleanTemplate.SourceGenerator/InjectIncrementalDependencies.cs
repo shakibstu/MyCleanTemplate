@@ -1,8 +1,8 @@
 ﻿
-using System.Collections.Immutable;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
+using System.Text;
 namespace MyCleanTemplate.SourceGenerator;
 
 public static class InjectIncrementalDependencies
@@ -50,7 +50,7 @@ public static class InjectIncrementalDependencies
         while (tmpSymbol != null)
         {
             var attributes = tmpSymbol.GetAttributes()
-                .Where(attr => GetType(attr.AttributeClass!,false) == attributeName).ToList();
+                .Where(attr => GetType(attr.AttributeClass!, false) == attributeName).ToList();
             if (attributes.Any())
             {
                 types.AddRange(attributes.Select(GetTypeOfParametricAttribute));
@@ -448,7 +448,7 @@ public static class InjectIncrementalDependencies
                 {
 
                     builder.Append(
-                        $"services.Add{level}(typeof({injection}),typeof({GetType(info.symbol,true)}));");
+                        $"services.Add{level}(typeof({injection}),typeof({GetType(info.symbol, true)}));");
                     builder.AppendLine();
                 }
             }

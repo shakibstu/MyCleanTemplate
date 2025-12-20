@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using MyCleanTemplate.Domain.Common.Logs;
+using System.Diagnostics;
 using System.Reflection;
-using MyCleanTemplate.Domain.Common.Logs;
 using Xunit.v3;
 
 namespace MyCleanTemplate.IntegrationTest.Automation;

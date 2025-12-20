@@ -1,15 +1,9 @@
-﻿using Castle.DynamicProxy;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyCleanTemplate.Domain.Abstractions;
-using MyCleanTemplate.Domain.Test;
 using MyCleanTemplate.Infrastructure.Persistence;
-using MyCleanTemplate.Infrastructure.Persistence.Interceptors;
-using MyCleanTemplate.Infrastructure.Tests;
-using OpenTelemetry.Trace;
 using ServiceGenerator;
-
 namespace MyCleanTemplate.Infrastructure;
 
 public static class InfrastructureServiceRegistration

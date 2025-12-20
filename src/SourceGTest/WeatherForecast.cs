@@ -1,5 +1,3 @@
-using ServiceGenerator;
-
 namespace SourceGTest;
 
 public class WeatherForecast

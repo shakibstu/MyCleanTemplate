@@ -12,7 +12,7 @@ public class OtelTestFramework : TracedPipelineStartup
 {
     public static readonly InMemoryTestSpans CollectedSpans = [];
     public static readonly Guid RunId = Guid.NewGuid();
-    public OtelTestFramework() 
+    public OtelTestFramework()
     {
         traceProviderSetup = tpb =>
         {

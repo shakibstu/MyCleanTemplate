@@ -1,11 +1,11 @@
-﻿using System.Net;
-using MyCleanTemplate.IntegrationTest.Automation;
-using System.Net.Http.Json;
-using MyCleanTemplate.API.Models;
+﻿using MyCleanTemplate.API.Models;
 using MyCleanTemplate.Application.Contract.Test.Query;
-using Shouldly;
-using Xunit;
 using MyCleanTemplate.Domain.Common.Logs;
+using MyCleanTemplate.IntegrationTest.Automation;
+using Shouldly;
+using System.Net;
+using System.Net.Http.Json;
+using Xunit;
 
 namespace MyCleanTemplate.IntegrationTest;
 
@@ -33,7 +33,7 @@ public class TestTest(IntegrationTestWebApplicationFactory applicationFactory)
 
         bool CheckArgument(Dictionary<string, object> tags) => ((object[])tags["Repository.Arguments"])[0].ToString() == request.Name;
     }
-        
+
     [Fact]
     public async Task TestGetApp()
     {

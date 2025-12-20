@@ -1,6 +1,5 @@
 ﻿using MediatRR;
 using Microsoft.Extensions.DependencyInjection;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
 using MyCleanTemplate.Infrastructure.Persistence;
 using Xunit;
 

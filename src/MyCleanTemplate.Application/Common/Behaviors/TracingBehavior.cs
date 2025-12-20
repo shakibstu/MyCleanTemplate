@@ -1,13 +1,12 @@
-﻿using MyCleanTemplate.Domain.Abstractions.Messaging;
+﻿using MediatRR.Contract.Messaging;
+using MyCleanTemplate.Domain.Abstractions.Messaging;
+using MyCleanTemplate.Domain.Common;
 using MyCleanTemplate.Domain.Common.Logs;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
-using ServiceGenerator;
 using System.Diagnostics;
 using System.Text.Json;
-using MediatRR.Contract.Messaging;
-using MyCleanTemplate.Domain.Common;
-
+using ServiceGenerator;
 namespace MyCleanTemplate.Application.Common.Behaviors;
 
 [TransientDependency(typeof(IPipelineBehavior<,>))]

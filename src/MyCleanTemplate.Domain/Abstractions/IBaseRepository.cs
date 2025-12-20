@@ -1,6 +1,4 @@
 ﻿using System.Linq.Expressions;
-using MyCleanTemplate.Domain.Common.Logs;
-using ServiceGenerator;
 
 namespace MyCleanTemplate.Domain.Abstractions;
 

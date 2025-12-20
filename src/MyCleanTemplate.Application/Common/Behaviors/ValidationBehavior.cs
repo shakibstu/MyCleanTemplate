@@ -1,10 +1,8 @@
 
 using FluentValidation;
 using MediatRR.Contract.Messaging;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
-using ServiceGenerator;
 using ValidationException = MyCleanTemplate.Domain.Exceptions.ValidationException;
-
+using ServiceGenerator;
 namespace MyCleanTemplate.Application.Common.Behaviors;
 
 [TransientDependency(typeof(IPipelineBehavior<,>))]

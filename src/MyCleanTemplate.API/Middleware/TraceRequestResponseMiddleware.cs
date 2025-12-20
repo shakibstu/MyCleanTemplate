@@ -1,12 +1,11 @@
-﻿using System.Diagnostics;
-using MyCleanTemplate.Domain.Common.Logs;
-using ServiceGenerator;
+﻿using MyCleanTemplate.Domain.Common.Logs;
+using System.Diagnostics;
 using System.Text.Json;
-
+using ServiceGenerator;
 namespace MyCleanTemplate.API.Middleware;
 
 [TransientDependency<LogRequestResponseMiddleware>]
-public class LogRequestResponseMiddleware: IMiddleware
+public class LogRequestResponseMiddleware : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {

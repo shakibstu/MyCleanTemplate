@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using MyCleanTemplate.API.Models;
 using MyCleanTemplate.Application.Contract.Test.Commands;
 using MyCleanTemplate.Application.Contract.Test.Query;
-using MyCleanTemplate.Domain.Abstractions.Messaging;
 
 namespace MyCleanTemplate.API.Controllers;
 
@@ -17,7 +16,7 @@ public class TestController(IMediator mediator, ILogger<TestController> logger) 
         using (logger.BeginScope("Processing this {name}", request.Name))
         {
             logger.LogError("LOG TEST!!");
-            await mediator.Send(new CreateTestCommand{ Name = request.Name});
+            await mediator.Send(new CreateTestCommand { Name = request.Name });
             return Ok();
         }
     }

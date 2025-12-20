@@ -1,7 +1,5 @@
-using ServiceGenerator;
-
 namespace SourceGTest;
-
+using ServiceGenerator;
 public class Program
 {
     public static void Main(string[] args)
