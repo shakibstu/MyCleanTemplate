@@ -31,7 +31,7 @@ public static class InfrastructureServiceRegistration
 
         var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
         var dataSeeders = seeders as IReadOnlyList<IDataSeeder> ?? seeders.ToList();
-        dataSeeders = dataSeeders.OrderByDescending(o => o.Order).ToList();
+        dataSeeders = dataSeeders.OrderBy(o => o.Order).ToList();
 
         foreach (var seeder in dataSeeders)
         {
