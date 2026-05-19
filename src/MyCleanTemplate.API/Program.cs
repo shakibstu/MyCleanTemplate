@@ -1,9 +1,11 @@
+using MyCleanTemplate.API.Authentication;
 using MyCleanTemplate.API.Errors;
 using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
 using MyCleanTemplate.Domain;
 using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
+using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.ServiceDefaults;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -19,6 +21,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().AddDomainServices().InjectFromSourceGenerator();
+
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>("database", tags: ["ready"]);
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Logging.AddFilter(b => b > LogLevel.Information).AddOpenTelemetry(logging =>
@@ -73,6 +80,7 @@ app.UseMiddleware<LogRequestResponseMiddleware>();
 app.UseExceptionHandler();
 app.UseRouting().UseEndpoints(endpoints => { endpoints.MapControllers(); });
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 await app.RunAsync();
 

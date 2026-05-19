@@ -58,6 +58,12 @@ public static class Extensions
             {
                 Predicate = r => r.Tags.Contains("live")
             });
+
+            // Only health checks tagged with the "ready" tag must pass for app to accept traffic
+            app.MapHealthChecks("/ready", new HealthCheckOptions
+            {
+                Predicate = r => r.Tags.Contains("ready")
+            });
         }
 
         return app;
