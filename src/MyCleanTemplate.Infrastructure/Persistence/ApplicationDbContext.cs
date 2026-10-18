@@ -1,18 +1,21 @@
-﻿using MediatRR;
+#nullable enable
+using MediatRR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using MyCleanTemplate.Domain.Abstractions;
-using MyCleanTemplate.Infrastructure.Common;
 using System.Data;
 using System.Reflection;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using MyCleanTemplate.Infrastructure.Common;
+using MyCleanTemplate.Infrastructure.Identity;
 using ServiceGenerator;
 namespace MyCleanTemplate.Infrastructure.Persistence;
 [ScopedDependency<IUnitOfWork>]
-public partial class ApplicationDbContext(IMediator mediator, DbContextOptions<ApplicationDbContext> options)
-    : DbContext(options), IUnitOfWork
+public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IMediator mediator)
+    : IdentityDbContext<CustomIdentityUser, CustomIdentityRole, string>(options), IUnitOfWork
 {
-    private IDbContextTransaction _currentTransaction;
-    public IDbContextTransaction GetCurrentTransaction() => _currentTransaction;
+    private IDbContextTransaction? _currentTransaction;
+    public IDbContextTransaction? GetCurrentTransaction() => _currentTransaction;
 
     public bool HasActiveTransaction => _currentTransaction != null;
     protected override void OnModelCreating(ModelBuilder builder)
@@ -36,7 +39,7 @@ public partial class ApplicationDbContext(IMediator mediator, DbContextOptions<A
         return true;
     }
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    public async Task<IDbContextTransaction?> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_currentTransaction != null) return null;
 

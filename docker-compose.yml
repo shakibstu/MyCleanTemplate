@@ -6,5 +6,7 @@ services:
     build:
       context: .
       dockerfile: src/MyCleanTemplate.API/Dockerfile
-  jeager:
-    image: jaegertracing/all-in-one:latest
+    depends_on:
+      - aspire-dashboard
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:13.6.1

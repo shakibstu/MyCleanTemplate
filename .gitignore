@@ -342,3 +342,7 @@ healthchecksdb
 /src/MyCleanTemplate.API/*.db-wal
 /src/MyCleanTemplate.API/*.db-shm
 /src/MyCleanTemplate.API/*.db
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md

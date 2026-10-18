@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using MediatRR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MyCleanTemplate.API;
+using MyCleanTemplate.Domain.Events;
 using MyCleanTemplate.Infrastructure.Persistence;
 using Xunit;
 
@@ -22,6 +24,9 @@ public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Progra
             services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(connection));
+
+            services.AddSingleton<NotificationProbe>();
+            services.AddNotificationHandler<TestAddedEvent, RecordingTestAddedEventHandler>(null);
         });
     }
 

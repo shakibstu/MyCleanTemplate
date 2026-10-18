@@ -4,8 +4,11 @@ services:
   mycleantemplate.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Jeager=http://jeager:4317
-      - ConnectionStrings__DefaultConnection=Data Source=app.db;
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - Jwt__SigningKey=MyCleanTemplate-Super-Secret-Key-For-Development-Only-Replace-In-Production-12345678
+      - Jwt__Issuer=MyCleanTemplate
+      - Jwt__Audience=MyCleanTemplate
+      - Jwt__TokenExpirationMinutes=60
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
     ports:
@@ -14,11 +17,11 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-  jeager:
-    container_name: jaeger
+  aspire-dashboard:
     environment:
-      - COLLECTOR_OTLP_ENABLED=true
+      # Local development only: no login token for the UI, no API key for OTLP
+      - Dashboard__Frontend__AuthMode=Unsecured
+      - Dashboard__Otlp__AuthMode=Unsecured
     ports:
-      - "16686:16686"
-      - "4317:4317"
-      - "4318:4318" 
+      - "18888:18888" # dashboard UI
+      - "4317:18889"  # OTLP/gRPC, so an API started with `dotnet run` can export here too
