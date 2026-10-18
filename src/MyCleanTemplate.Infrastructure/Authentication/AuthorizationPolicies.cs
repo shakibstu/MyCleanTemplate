@@ -1,4 +1,4 @@
-namespace MyCleanTemplate.API.Authentication;
+namespace MyCleanTemplate.Infrastructure.Authentication;
 
 public static class AuthorizationPolicies
 {

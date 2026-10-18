@@ -1,4 +1,3 @@
-using MyCleanTemplate.API.Authentication;
 using MyCleanTemplate.API.Errors;
 using MyCleanTemplate.API.Middleware;
 using MyCleanTemplate.Application;
@@ -7,22 +6,36 @@ using MyCleanTemplate.Domain.Common.Logs;
 using MyCleanTemplate.Infrastructure;
 using MyCleanTemplate.Infrastructure.Persistence;
 using MyCleanTemplate.ServiceDefaults;
-using OpenTelemetry;
-using OpenTelemetry.Exporter;
+using Microsoft.OpenApi;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ServiceGenerator;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().AddDomainServices().InjectFromSourceGenerator();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
 
-builder.Services.AddJwtAuthentication(builder.Configuration);
+    options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        { new OpenApiSecuritySchemeReference("Bearer", doc), [] }
+    });
+});
+builder.Services.AddInfrastructureServices(builder.Configuration).AddApplicationServices().AddDomainServices().InjectFromSourceGenerator();
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>("database", tags: ["ready"]);
@@ -50,19 +63,12 @@ builder.Services.AddOpenTelemetry()
         b.AddSource(TelemetryHelper.TelemetryServiceName)
             .ConfigureResource(resource =>
                 resource.AddService(
-                    serviceName: TelemetryHelper.TelemetryServiceName).AddAttributes([new KeyValuePair<string, object>("Machine",Environment.MachineName)
+                    serviceName: TelemetryHelper.TelemetryServiceName).AddAttributes([
+                    new KeyValuePair<string, object>("Machine", Environment.MachineName)
                 ]))
             .AddEntityFrameworkCoreInstrumentation()
-            .AddOtlpExporter()
-            //.AddAspNetCoreInstrumentation()
-            //.AddHttpClientInstrumentation()
-            //.AddConsoleExporter()
-            //.AddZipkinExporter()
-            //.AddOtlpExporter(a => a.Endpoint = new Uri(builder.Configuration.GetConnectionString("Jeager")!))
-            ;
-    })
-    //.UseOtlpExporter()
-    ;
+            .AddOtlpExporter();
+    });
 
 builder.Services.AddProblemDetails();
 var app = builder.Build();
@@ -78,10 +84,14 @@ if (app.Environment.IsDevelopment())
 }
 app.UseMiddleware<LogRequestResponseMiddleware>();
 app.UseExceptionHandler();
-app.UseRouting().UseEndpoints(endpoints => { endpoints.MapControllers(); });
 app.UseHttpsRedirection();
+
+// Correct middleware order: Routing -> Authentication -> Authorization -> Endpoints
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
+
 await app.RunAsync();
 
 namespace MyCleanTemplate.API

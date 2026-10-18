@@ -20,7 +20,7 @@ public class TestTest(IntegrationTestWebApplicationFactory applicationFactory)
         {
             Name = "SH"
         };
-        var response = await HttpClient.PostAsJsonAsync("/api/test/CreateTest", request);
+        var response = await HttpClient.PostAsJsonAsync("/api/test/CreateTest", request, TestContext.Current.CancellationToken);
 
         var activities = OtelTestFramework.CollectedSpans.GetSpans([CheckName!, CheckArgument!]
                 , TelemetryHelper.TelemetrySpanLevelRepository, OtelTestFramework.RunId);
@@ -37,7 +37,7 @@ public class TestTest(IntegrationTestWebApplicationFactory applicationFactory)
     [Fact]
     public async Task TestGetApp()
     {
-        var response = await Sender.Send(new TestQuery());
+        var response = await Sender.Send(new TestQuery(), TestContext.Current.CancellationToken);
         response.ShouldNotBeNull();
     }
     //[Fact]

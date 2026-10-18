@@ -9,7 +9,9 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Build.props", "Directory.Packages.props", "./"]
 COPY ["src/MyCleanTemplate.API/MyCleanTemplate.API.csproj", "src/MyCleanTemplate.API/"]
+COPY ["src/MyCleanTemplate.ServiceDefaults/MyCleanTemplate.ServiceDefaults.csproj", "src/MyCleanTemplate.ServiceDefaults/"]
 COPY ["src/MyCleanTemplate.Infrastructure/MyCleanTemplate.Infrastructure.csproj", "src/MyCleanTemplate.Infrastructure/"]
 COPY ["src/MyCleanTemplate.Application/MyCleanTemplate.Application.csproj", "src/MyCleanTemplate.Application/"]
 COPY ["src/MyCleanTemplate.Application.Contract/MyCleanTemplate.Application.Contract.csproj", "src/MyCleanTemplate.Application.Contract/"]
